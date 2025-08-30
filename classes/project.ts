@@ -1,0 +1,205 @@
+import { App, normalizePath } from "obsidian";
+import { GEOD3FileManager } from "./tabs/file-manager";
+import { GameView } from "./tabs/game-view";
+import { SceneView } from "./tabs/scene-view";
+import { ScriptEditor } from "./tabs/script-editor";
+import { Tab } from "./tabs/tab";
+import { GEOD3Object } from "./tabs/geod3-object";
+import { ASHandler } from "./structs/struct";
+import { AF, AFHandler, AFI } from "./functions/function";
+
+export class Project {
+    pathToProject: string;
+    tabs: Tab[];
+
+    get fileManager(): GEOD3FileManager {
+        return <GEOD3FileManager> this.tabs[0];
+    }
+
+    get sceneView(): SceneView {
+        return <SceneView> this.tabs[1];
+    }
+
+    get scriptEditor(): ScriptEditor {
+        return <ScriptEditor> this.tabs[2];
+    }
+
+    get gameView(): GameView {
+        return <GameView> this.tabs[3];
+    }
+
+    get fileManagerTabID(): number {
+        return 0;
+    }
+
+    get sceneViewTabID(): number {
+        return 1;
+    }
+
+    get scriptEditorTabID(): number {
+        return 2;
+    }
+
+    get gameViewTabID(): number {
+        return 3;
+    }
+
+    activeTabID: number;
+    anp: AppAndProject
+
+    SwitchToTab: (index: number) => Promise<void>;
+
+    constructor(app: App) {
+        this.anp = new AppAndProject(app, this);
+        this.tabs = [];
+        this.tabs.push(new GEOD3FileManager(this.anp));
+        this.tabs.push(new SceneView(this.anp));
+        this.tabs.push(new ScriptEditor(this.anp));
+        this.tabs.push(new GameView(this.anp));
+        this.activeTabID = 0;
+    }
+
+    async Load() {
+        await this.LoadFiles();
+        await this.GrabFileDependencies();
+        await this.LoadObjects();
+    }
+    async LoadFiles() {
+        await this.fileManager.LoadFiles(this.anp);
+    }
+    async GrabFileDependencies() {
+        const fm = this.fileManager;
+        for (let i = 0; i < fm.files.length; i++) {
+            await fm.files[i].GrabDependencies(this.anp);
+        }
+    }
+    async LoadObjects() {
+        const sv = this.sceneView;
+        const path = normalizePath(this.anp.project.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
+        const tFile = this.anp.app.vault.getFileByPath(path);
+        if (tFile === null) {
+            return;
+        }
+        const data = await this.anp.app.vault.cachedRead(tFile);
+        const plainObj = JSON.parse(data);
+        sv.objects = plainObj.objects;
+        const loadFunction = (plainFunct: any): AFI => {
+            const newFunct = Object.assign(AFHandler.CreateI(plainFunct.type, plainFunct.parameters), plainFunct);
+            for (let i = 0; i < newFunct.defaultParameters.length; i++) {
+                const isStruct = plainFunct.defaultParameters[i].name !== undefined;
+                if (isStruct) {
+                    const plainStruct = plainFunct.defaultParameters[i];
+                    newFunct.defaultParameters[i] = Object.assign(ASHandler.CreateI(plainStruct.type, plainStruct.scope, plainStruct.name), plainStruct);
+                } else {
+                    newFunct.defaultParameters[i] = loadFunction(plainFunct.defaultParameters[i]);
+                }
+            }
+            for (let i = 0; i < newFunct.parameters.length; i++) {
+                const isStruct = plainFunct.parameters[i].name !== undefined;
+                if (isStruct) {
+                    const plainStruct = plainFunct.parameters[i];
+                    newFunct.parameters[i] = Object.assign(ASHandler.CreateI(plainStruct.type, plainStruct.scope, plainStruct.name), plainStruct);
+                } else {
+                    newFunct.parameters[i] = loadFunction(plainFunct.parameters[i]);
+                }
+            }
+            return newFunct;
+        }
+        for (let i = 0; i < plainObj.objects.length; i++) {
+            const newObj = Object.assign(new GEOD3Object(i), plainObj.objects[i]);
+            sv.objects[i] = newObj;
+            for (let j = 0; j < newObj.variables.length; j++) {
+                const plainVar = sv.objects[i].variables[j];
+                const newVar = Object.assign(ASHandler.CreateI(plainVar.type, plainVar.scope, plainVar.name), plainVar);
+                sv.objects[i].variables[j] = newVar;
+            }
+            for (let j = 0; j < newObj.onStart.length; j++) {
+                const plainFunct = sv.objects[i].onStart[j];
+                const newFunct = loadFunction(plainFunct);
+                sv.objects[i].onStart[j] = newFunct;
+            }
+            for (let j = 0; j < newObj.onNewFrame.length; j++) {
+                const plainFunct = sv.objects[i].onNewFrame[j];
+                const newFunct = loadFunction(plainFunct);
+                sv.objects[i].onNewFrame[j] = newFunct;
+            }
+        }
+    }
+
+    async Display(div: HTMLDivElement) {
+        div.empty();
+
+        const tabBar = div.createDiv('geod3-tab-bar hbox');
+        const tabContainer = div.createDiv('geod3-tab-container');
+
+        const tabIcons: HTMLElement[] = [];
+
+        const filesTab = tabBar.createEl('button', { text: GEOD3FileManager.icon } );
+        const sceneViewTab = tabBar.createEl('button', { text: SceneView.icon } );
+        const scriptEditorTab = tabBar.createEl('button', { text: ScriptEditor.icon } );
+        const gameTab = tabBar.createEl('button', { text: GameView.icon } );
+        const saveButton = tabBar.createEl('button', { text: '💾Save' } );
+        saveButton.className = 'geod3-secondary-button';
+        saveButton.onclick = async () => {
+            saveButton.disabled = true;
+            saveButton.textContent = '⟳Saving...';
+            const path = normalizePath(this.anp.project.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
+            const data = JSON.stringify(new SceneDTO(this.anp.project.sceneView.objects));
+            await this.anp.app.vault.adapter.write(path, data);
+            saveButton.disabled = false;
+            saveButton.textContent = '💾Save';
+        }
+
+        filesTab.className = 'geod3-tab-icon';
+        sceneViewTab.className = 'geod3-tab-icon';
+        scriptEditorTab.className = 'geod3-tab-icon';
+        gameTab.className = 'geod3-tab-icon';
+
+        tabIcons.push(filesTab);
+        tabIcons.push(sceneViewTab);
+        tabIcons.push(scriptEditorTab);
+        tabIcons.push(gameTab);
+
+        tabIcons[this.activeTabID].className = 'geod3-tab-icon-opened';
+        this.tabs[this.activeTabID].Focus(tabContainer);
+
+        const switchToTab = async (index: number) => {
+            tabIcons[this.activeTabID].className = 'geod3-tab-icon';
+            await this.tabs[this.activeTabID].UnFocus(tabContainer);
+            this.activeTabID = index;
+            tabIcons[this.activeTabID].className = 'geod3-tab-icon-opened';
+            this.tabs[this.activeTabID].Focus(tabContainer);
+        }
+
+        this.SwitchToTab = switchToTab;
+
+        filesTab.onclick = () => {
+            switchToTab(0);
+        }
+        sceneViewTab.onclick = () => {
+            switchToTab(1);
+        }
+        scriptEditorTab.onclick = () => {
+            switchToTab(2);
+        }
+        gameTab.onclick = () => {
+            switchToTab(3);
+        }
+    }
+}
+
+export class AppAndProject {
+    app: App;
+    project: Project;
+    constructor(app: App, project: Project) {
+        this.app = app;
+        this.project = project;
+    }
+}
+
+export class SceneDTO {
+    objects: GEOD3Object[];
+    constructor(objects: GEOD3Object[] = []) {
+        this.objects = objects;
+    }
+}
