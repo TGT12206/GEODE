@@ -1,9 +1,9 @@
 {
 	"id": "geod3",
 	"name": "GEO:D3",
-	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "A game engine within obsidian (GEO:D3 / GEODE stands for Game Engine in Obsidian: Developed by 3rd-party)",
+	"version": "0.0.0",
+	"minAppVersion": "1.9.12",
+	"description": "A game engine (think about the level of scratch) within obsidian (GEO:D3 / GEODE stands for Game Engine in Obsidian: Developed by 3rd-party. Could also be Game Engine in Obsidian Despite Everything, or anything else it could stand for, really.)",
 	"author": "TGT12206",
 	"authorUrl": "n/a",
 	"fundingUrl": "n/a",
