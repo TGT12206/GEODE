@@ -91,16 +91,22 @@ export class ScriptEditor extends Tab {
         const chainI = AFHandler.CreateI(AF.chain, undefined);
         const getI = AFHandler.CreateI(AF.get, undefined);
         const setI = AFHandler.CreateI(AF.set, undefined);
+        const ifI = AFHandler.CreateI(AF.if, undefined);
+        const equalsI = AFHandler.CreateI(AF.equals, undefined);
         const addI = AFHandler.CreateI(AF.add, undefined);
 
         const chainBlock = AFHandler.CreateEI(chainI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
         const getBlock = AFHandler.CreateEI(getI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
         const setBlock = AFHandler.CreateEI(setI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
+        const ifBlock = AFHandler.CreateEI(ifI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
+        const equalsBlock = AFHandler.CreateEI(equalsI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
         const addBlock = AFHandler.CreateEI(addI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
 
         AFEI.MakeBlockDraggable(chainBlock, this.anp, true);
         AFEI.MakeBlockDraggable(getBlock, this.anp, true);
         AFEI.MakeBlockDraggable(setBlock, this.anp, true);
+        AFEI.MakeBlockDraggable(ifBlock, this.anp, true);
+        AFEI.MakeBlockDraggable(equalsBlock, this.anp, true);
         AFEI.MakeBlockDraggable(addBlock, this.anp, true);
     }
 

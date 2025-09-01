@@ -1,4 +1,5 @@
 import { Scope } from "classes/scope";
+import { BG_COLOR_1, BG_COLOR_2, BG_COLOR_3, ACCENT_COLOR_1, ACCENT_COLOR_2, ACCENT_COLOR_3, CENTRAL_COLOR_1, CENTRAL_COLOR_2, CENTRAL_COLOR_3, REMOVE_COLOR_1, REMOVE_COLOR_2 } from "colors";
 
 export enum AS {
     'none',
@@ -38,28 +39,16 @@ export class ASHandler {
                 return new AStringI(scope, name);
         }
     }
-    static CreateII(struct: ASI, inspectorDiv: HTMLDivElement): ASII {
+    static CreateII(struct: ASI, inspectorDiv: HTMLDivElement, color: string | undefined = undefined): ASII {
         switch(struct.type) {
             case AS.none:
             case AS.boolean:
             default:
-                return new ABooleanII(struct, inspectorDiv);
+                return new ABooleanII(struct, inspectorDiv, color);
             case AS.number:
-                return new ANumberII(struct, inspectorDiv);
+                return new ANumberII(struct, inspectorDiv, color);
             case AS.string:
-                return new AStringII(struct, inspectorDiv);
-        }
-    }
-    static CreateEI(struct: ASI, blockDiv: HTMLDivElement): ASEI {
-        switch(struct.type) {
-            case AS.none:
-            case AS.boolean:
-            default:
-                return new ABooleanEI(struct, blockDiv);
-            case AS.number:
-                return new ANumberEI(struct, blockDiv);
-            case AS.string:
-                return new AStringEI(struct, blockDiv);
+                return new AStringII(struct, inspectorDiv, color);
         }
     }
 }
@@ -77,10 +66,16 @@ export abstract class ASI {
 
 export abstract class ASII {
     instance: ASI;
-}
-
-export abstract class ASEI {
-    instance: ASI;
+    static AdjustInputWidth(input: HTMLInputElement | HTMLSelectElement, div: HTMLDivElement) {
+        const tempEl = div.createEl('div', { text: input.value } );
+        tempEl.style.position = 'absolute';
+        tempEl.style.visibility = 'hidden';
+        tempEl.style.whiteSpace = 'nowrap';
+        tempEl.style.font = 'inherit';
+        tempEl.style.padding = input instanceof HTMLInputElement ? '1vh' : '2vh';
+        input.style.width = tempEl.getBoundingClientRect().width + 'px';
+        tempEl.remove();
+    }
 }
 
 //#region Boolean
@@ -95,22 +90,15 @@ export class ABooleanI extends ASI {
 
 export class ABooleanII extends ASII {
     instance: ABooleanI;
-    constructor(instance: ABooleanI, div: HTMLDivElement) {
-        super();
-        this.instance = instance;
-    }
-}
-
-export class ABooleanEI extends ASEI {
-    instance: ABooleanI;
-    constructor(instance: ABooleanI, div: HTMLDivElement) {
+    constructor(instance: ABooleanI, div: HTMLDivElement, color: string | undefined = undefined) {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'checkbox' } );
         input.checked = this.instance.value;
-        input.style.backgroundColor = 'rgb(29, 0, 54)'
-        input.onchange = () => {
+        input.style.backgroundColor = color === undefined ? CENTRAL_COLOR_3 : color;
+        input.onclick = () => {
             this.instance.value = input.checked;
+            input.style.backgroundColor = input.checked ? CENTRAL_COLOR_1 : CENTRAL_COLOR_3;
         }
     }
 }
@@ -128,22 +116,18 @@ export class ANumberI extends ASI {
 
 export class ANumberII extends ASII {
     instance: ANumberI;
-    constructor(instance: ANumberI, div: HTMLDivElement) {
+    constructor(instance: ANumberI, div: HTMLDivElement, color: string | undefined = undefined) {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'text', value: this.instance.value + '' } );
-        input.style.backgroundColor = 'rgb(29, 0, 54)'
+        ASII.AdjustInputWidth(input, div);
+        input.style.backgroundColor = color === undefined ? CENTRAL_COLOR_3 : color;
+        input.oninput = () => {
+            ASII.AdjustInputWidth(input, div);
+        }
         input.onchange = () => {
             this.instance.value = parseFloat(input.value);
         }
-    }
-}
-
-export class ANumberEI extends ASEI {
-    instance: ANumberI;
-    constructor(instance: ANumberI, div: HTMLDivElement) {
-        super();
-        this.instance = instance;
     }
 }
 //#endregion Number
@@ -160,22 +144,18 @@ export class AStringI extends ASI {
 
 export class AStringII extends ASII {
     instance: AStringI;
-    constructor(instance: AStringI, div: HTMLDivElement) {
+    constructor(instance: AStringI, div: HTMLDivElement, color: string | undefined = undefined) {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'text', value: this.instance.value + '' } );
-        input.style.backgroundColor = 'rgb(29, 0, 54)'
+        ASII.AdjustInputWidth(input, div);
+        input.style.backgroundColor = color === undefined ? CENTRAL_COLOR_3 : color;
+        input.oninput = () => {
+            ASII.AdjustInputWidth(input, div);
+        }
         input.onchange = () => {
             this.instance.value = input.value;
         }
-    }
-}
-
-export class AStringEI extends ASEI {
-    instance: AStringI;
-    constructor(instance: AStringI, div: HTMLDivElement) {
-        super();
-        this.instance = instance;
     }
 }
 //#endregion String

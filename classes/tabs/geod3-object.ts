@@ -39,6 +39,19 @@ export class GEOD3Object {
         this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'x'));
         this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'y'));
         this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'z'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Speed x'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Speed y'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Speed z'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Acceleration x'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Acceleration y'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Acceleration z'));
+        this.variables.push(ASHandler.CreateI(AS.boolean, Scope.Public, 'Do Rectangular Hitbox'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Hitbox Radius/Half Width'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Hitbox Half Height'));
+        this.variables.push(ASHandler.CreateI(AS.number, Scope.Public, 'Hitbox Half Thickness'));
+
+        this.variables[1].value = 100;
+        this.variables[2].value = 100;
     }
 }
 
@@ -156,14 +169,31 @@ export class GEOD3ObjectRI {
         }
     }
     private SetLocationAndWidth() {
-        const width = GEOD3ObjectHandler.GetVariable(this, 'Sprite Width').value;
-        const height = GEOD3ObjectHandler.GetVariable(this, 'Sprite Height').value;
-        const x = GEOD3ObjectHandler.GetVariable(this, 'x').value;
-        const y = GEOD3ObjectHandler.GetVariable(this, 'y').value;
-        this.objDiv.style.width = width + 'px';
-        this.objDiv.style.height = height + 'px';
-        this.objDiv.style.left = x + 'px';
-        this.objDiv.style.bottom = y + 'px';
+        const width = GEOD3ObjectHandler.GetVariable(this, 'Sprite Width');
+        const height = GEOD3ObjectHandler.GetVariable(this, 'Sprite Height');
+        const x = GEOD3ObjectHandler.GetVariable(this, 'x');
+        const y = GEOD3ObjectHandler.GetVariable(this, 'y');
+        const z = GEOD3ObjectHandler.GetVariable(this, 'z');
+        const xVel = GEOD3ObjectHandler.GetVariable(this, 'Speed x');
+        const yVel = GEOD3ObjectHandler.GetVariable(this, 'Speed y');
+        const zVel = GEOD3ObjectHandler.GetVariable(this, 'Speed z');
+        const xAccel = GEOD3ObjectHandler.GetVariable(this, 'Acceleration x');
+        const yAccel = GEOD3ObjectHandler.GetVariable(this, 'Acceleration y');
+        const zAccel = GEOD3ObjectHandler.GetVariable(this, 'Acceleration z');
+        
+        this.objDiv.style.width = width.value + 'px';
+        this.objDiv.style.height = height.value + 'px';
+
+        xVel.value += xAccel.value;
+        yVel.value += yAccel.value;
+        zVel.value += zAccel.value;
+
+        x.value += xVel.value;
+        y.value += yVel.value;
+        z.value += zVel.value;
+        
+        this.objDiv.style.left = x.value + 'px';
+        this.objDiv.style.bottom = y.value + 'px';
     }
     Render() {
         this.RefreshSprite();

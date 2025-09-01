@@ -1,13 +1,16 @@
 import { AppAndProject } from "classes/project";
 import { Scope } from "classes/scope";
-import { ANumberI, AS, ASHandler, ASI, AStringI } from "classes/structs/struct";
+import { ABooleanI, ANumberI, AS, ASHandler, ASI, AStringI } from "classes/structs/struct";
 import { GEOD3ObjectHandler } from "classes/tabs/geod3-object";
+import { BG_COLOR_1, BG_COLOR_2, BG_COLOR_3, ACCENT_COLOR_1, ACCENT_COLOR_2, ACCENT_COLOR_3, CENTRAL_COLOR_1, CENTRAL_COLOR_2, CENTRAL_COLOR_3, REMOVE_COLOR_1, REMOVE_COLOR_2 } from "colors";
 
 export enum AF {
     'none',
     'chain',
     'get',
     'set',
+    'if',
+    'equals',
     'add'
 }
 
@@ -32,6 +35,10 @@ export class AFHandler {
                 return new AGetI(<ASI[]> newParams);
             case AF.set:
                 return new ASetI(newParams);
+            case AF.if:
+                return new AIfI(newParams);
+            case AF.equals:
+                return new AEqualsI(newParams);
             case AF.add:
                 return new AAddI(newParams);
         }
@@ -47,6 +54,10 @@ export class AFHandler {
                 return new AGetI(<ASI[] | undefined> parameters);
             case AF.set:
                 return new ASetI(parameters);
+            case AF.if:
+                return new AIfI(parameters);
+            case AF.equals:
+                return new AEqualsI(parameters);
             case AF.add:
                 return new AAddI(parameters);
         }
@@ -62,6 +73,10 @@ export class AFHandler {
                 return new AGetEI(obj, blockDiv, anp);
             case AF.set:
                 return new ASetEI(obj, blockDiv, anp);
+            case AF.if:
+                return new AIfEI(obj, blockDiv, anp);
+            case AF.equals:
+                return new AEqualsEI(obj, blockDiv, anp);
             case AF.add:
                 return new AAddEI(obj, blockDiv, anp);
         }
@@ -77,12 +92,17 @@ export class AFHandler {
                 return new AGetRI(obj, anp);
             case AF.set:
                 return new ASetRI(obj, anp);
+            case AF.if:
+                return new AIfRI(obj, anp);
+            case AF.equals:
+                return new AEqualsRI(obj, anp);
             case AF.add:
                 return new AAddRI(obj, anp);
         }
     }
 }
 
+//#region Abstract Classes
 export abstract class AFI {
     type: AF;
     defaultParameters: (ASI | AFI)[];
@@ -105,6 +125,38 @@ export abstract class AFEI {
         this.DisplayBlock();
     }
     abstract DisplayBlock(): void;
+    static AdjustInputWidth(input: HTMLInputElement | HTMLSelectElement, div: HTMLDivElement) {
+        const tempEl = div.createEl('div', { text: input.value } );
+        tempEl.style.position = 'absolute';
+        tempEl.style.visibility = 'hidden';
+        tempEl.style.whiteSpace = 'nowrap';
+        tempEl.style.font = 'inherit';
+        tempEl.style.padding = input instanceof HTMLInputElement ? '1vh' : '2vh';
+        input.style.width = tempEl.getBoundingClientRect().width + 'px';
+        tempEl.remove();
+    }
+    CreateASIOrAFIParameterDiv(index: number, paramDiv: HTMLDivElement, backgroundColor: string): void | AFEI {
+        const param = this.instance.parameters[index];
+        if (param instanceof ASI) {
+            return this.CreateASIParameterDiv(index, paramDiv, backgroundColor);
+        } else {
+            return this.CreateAFIParameterDiv(index, paramDiv, backgroundColor);
+        }
+    }
+    CreateASIParameterDiv(index: number, paramDiv: HTMLDivElement, backgroundColor: string): void {
+        const param = <ASI> this.instance.parameters[index];
+        ASHandler.CreateII(param, paramDiv, backgroundColor);
+    }
+    CreateAFIParameterDiv(index: number, paramDiv: HTMLDivElement, backgroundColor: string): AFEI {
+        const param = <AFI> this.instance.parameters[index];
+        const paramEI = AFHandler.CreateEI(param, paramDiv, this.anp);
+        AFEI.MakeBlockDraggable(paramEI, this.anp, false);
+        paramEI.parentEI = this;
+        if (paramEI.instance.type === AF.none) {
+            paramEI.div.style.backgroundColor = backgroundColor;
+        }
+        return paramEI;
+    }
     RemoveParameter(parameter: AFI): void {
         for (let i = 0; i < this.instance.parameters.length; i++) {
             if (this.instance.parameters[i] === parameter) {
@@ -144,7 +196,7 @@ export abstract class AFEI {
                 event.dataTransfer.dropEffect = "copy";
             }
             paramDiv.style.borderStyle = 'solid';
-            paramDiv.style.borderColor = 'rgb(223, 236, 255)';
+            paramDiv.style.borderColor = ACCENT_COLOR_1;
         });
 
         paramDiv.addEventListener('dragleave', (event: DragEvent) => {
@@ -201,6 +253,7 @@ export abstract class AFRI {
         }
     }
 }
+//#endregion Abstract Classes
 
 //#region Do Nothing
 export class ADoNothingI extends AFI {
@@ -210,9 +263,10 @@ export class ADoNothingI extends AFI {
 export class ADoNothingEI extends AFEI {
     instance: ADoNothingI;
     override DisplayBlock(): void {
+        this.div.style.borderRadius = '0.5vh';
         this.div.style.minWidth = '4vh';
         this.div.style.minHeight = '4vh';
-        this.div.style.backgroundColor = 'rgb(5, 5, 8)';
+        this.div.style.backgroundColor = BG_COLOR_3;
     }
     override RemoveParameter(parameter: AFI): void { }
 }
@@ -245,9 +299,9 @@ export class AChainEI extends AFEI {
         this.div.empty();
         const div = this.div;
         div.className = 'geod3-script-block vbox';
-        div.style.backgroundColor = 'rgb(18, 18, 24)';
+        div.style.backgroundColor = BG_COLOR_2;
         div.style.borderStyle = 'solid';
-        div.style.borderColor = 'rgb(100, 109, 123)';
+        div.style.borderColor = ACCENT_COLOR_3;
         div.style.width = 'fit-content';
         div.style.padding = '1vh';
         div.style.gap = '1vh';
@@ -333,9 +387,9 @@ export class AGetEI extends AFEI {
         this.div.empty();
         const div = this.div;
         div.className = 'geod3-script-block hbox';
-        div.style.backgroundColor = 'rgb(78, 17, 131)';
+        div.style.backgroundColor = CENTRAL_COLOR_2;
         div.style.borderStyle = 'solid';
-        div.style.borderColor = 'rgb(100, 109, 123)';
+        div.style.borderColor = ACCENT_COLOR_3;
         const anp = this.anp;
 
         const varName = this.instance.parameters[0];
@@ -346,22 +400,11 @@ export class AGetEI extends AFEI {
         div.createEl('div', { text: 'from' } );
         const objDiv = div.createDiv();
 
-        const adjustInputWidth = (input: HTMLSelectElement) => {
-            const tempEl = div.createEl('div', { text: input.value } );
-            tempEl.style.position = 'absolute';
-            tempEl.style.visibility = 'hidden';
-            tempEl.style.whiteSpace = 'nowrap';
-            tempEl.style.font = 'inherit';
-            tempEl.style.padding = '1.75vh';
-            input.style.width = tempEl.getBoundingClientRect().width + 'px';
-            tempEl.remove();
-        }
-
         const objIDInput = objDiv.createEl('select');
         const varNameInput = varDiv.createEl('select');
 
-        objIDInput.style.backgroundColor = 'rgb(29, 0, 54)';
-        varNameInput.style.backgroundColor = 'rgb(29, 0, 54)';
+        objIDInput.style.backgroundColor = CENTRAL_COLOR_3;
+        varNameInput.style.backgroundColor = CENTRAL_COLOR_3;
 
         const objArr = anp.project.sceneView.objects;
         for (let i = 0; i < objArr.length; i++) {
@@ -379,12 +422,12 @@ export class AGetEI extends AFEI {
         
         objIDInput.onchange = () => {
             this.instance.parameters[1].value = parseInt(objIDInput.value.split(':')[0]);
-            adjustInputWidth(objIDInput);
+            AFEI.AdjustInputWidth(objIDInput, div);
             GetAllVarNames();
         }
         varNameInput.onchange = () => {
             this.instance.parameters[0].value = varNameInput.value;
-            adjustInputWidth(varNameInput);
+            AFEI.AdjustInputWidth(varNameInput, div);
         }
 
         GetAllVarNames();
@@ -392,8 +435,8 @@ export class AGetEI extends AFEI {
         objIDInput.value = objID.value + ': ' + objArr[objID.value].name;
         varNameInput.value = varName.value;
         
-        adjustInputWidth(objIDInput);
-        adjustInputWidth(varNameInput);
+        AFEI.AdjustInputWidth(objIDInput, div);
+        AFEI.AdjustInputWidth(varNameInput, div);
     }
 }
 
@@ -434,9 +477,9 @@ export class ASetEI extends AFEI {
         this.div.empty();
         const div = this.div;
         div.className = 'geod3-script-block hbox';
-        div.style.backgroundColor = 'rgb(78, 17, 131)';
+        div.style.backgroundColor = CENTRAL_COLOR_2;
         div.style.borderStyle = 'solid';
-        div.style.borderColor = 'rgb(100, 109, 123)';
+        div.style.borderColor = ACCENT_COLOR_3;
         const anp = this.anp;
 
         const varName = <ASI> this.instance.parameters[0];
@@ -451,22 +494,11 @@ export class ASetEI extends AFEI {
 
         AFEI.SetParameterDiv(anp, this, valueDiv, 2);
 
-        const adjustInputWidth = (input: HTMLSelectElement) => {
-            const tempEl = div.createEl('div', { text: input.value } );
-            tempEl.style.position = 'absolute';
-            tempEl.style.visibility = 'hidden';
-            tempEl.style.whiteSpace = 'nowrap';
-            tempEl.style.font = 'inherit';
-            tempEl.style.padding = '1.75vh';
-            input.style.width = tempEl.getBoundingClientRect().width + 'px';
-            tempEl.remove();
-        }
-
         const objIDInput = objDiv.createEl('select');
         const varNameInput = varDiv.createEl('select');
 
-        objIDInput.style.backgroundColor = 'rgb(29, 0, 54)';
-        varNameInput.style.backgroundColor = 'rgb(29, 0, 54)';
+        objIDInput.style.backgroundColor = CENTRAL_COLOR_3;
+        varNameInput.style.backgroundColor = CENTRAL_COLOR_3;
 
         const objArr = anp.project.sceneView.objects;
         for (let i = 0; i < objArr.length; i++) {
@@ -481,30 +513,22 @@ export class ASetEI extends AFEI {
                 varNameInput.createEl('option', { text: varArr[i].name, value: varArr[i].name } );
             }
 
+            valueDiv.empty();
             if (this.instance.parameters[2] instanceof AFI) {
-                const valBlock = AFHandler.CreateEI(this.instance.parameters[2], valueDiv, anp);
-                valBlock.parentEI = this;
-                AFEI.MakeBlockDraggable(valBlock, anp, false);
+                this.CreateAFIParameterDiv(2, valueDiv, CENTRAL_COLOR_3);
             } else {
-                valueDiv.empty();
-                const varName = <ASI> this.instance.parameters[0];
-                const objIndex = <ASI> this.instance.parameters[1];
-                const obj = this.anp.project.sceneView.objects[objIndex.value];
-                const value = ASHandler.Copy(GEOD3ObjectHandler.GetVariable(obj, varName.value));
-                value.value = this.instance.parameters[2].value;
-                ASHandler.CreateII(value, valueDiv);
-                this.instance.parameters[2] = value;
+                this.CreateASIParameterDiv(2, valueDiv, CENTRAL_COLOR_3);
             }
         }
         
         objIDInput.onchange = () => {
             (<ASI> this.instance.parameters[1]).value = parseInt(objIDInput.value.split(':')[0]);
-            adjustInputWidth(objIDInput);
+            AFEI.AdjustInputWidth(objIDInput, div);
             GetAllVarNames();
         }
         varNameInput.onchange = () => {
             (<ASI> this.instance.parameters[0]).value = varNameInput.value;
-            adjustInputWidth(varNameInput);
+            AFEI.AdjustInputWidth(varNameInput, div);
         }
 
         GetAllVarNames();
@@ -512,8 +536,8 @@ export class ASetEI extends AFEI {
         objIDInput.value = objID.value + ': ' + objArr[objID.value].name;
         varNameInput.value = varName.value;
 
-        adjustInputWidth(objIDInput);
-        adjustInputWidth(varNameInput);
+        AFEI.AdjustInputWidth(objIDInput, div);
+        AFEI.AdjustInputWidth(varNameInput, div);
     }
     override RemoveParameter(parameter: AFI): void {
         if (this.instance.parameters[2] === parameter) {
@@ -535,10 +559,128 @@ export class ASetRI extends AFRI {
 }
 //#endregion Set
 
+//#region If
+export class AIfI extends AFI {
+    type = AF.if;
+    constructor(parameters: (ASI | AFI)[] | undefined) {
+        super()
+        const condition = new ABooleanI(Scope.Value, 'condition');
+        const doNothing = new ADoNothingI();
+        condition.value = false;
+        this.defaultParameters = [condition, doNothing];
+        if (parameters !== undefined) {
+            this.parameters = parameters;
+        } else {
+            this.parameters.push(ASHandler.Copy(condition));
+            this.parameters.push(AFHandler.Copy(doNothing));
+        }
+    }
+}
+
+export class AIfEI extends AFEI {
+    instance: AIfI;
+    override DisplayBlock(): void {
+        this.div.empty();
+        const div = this.div;
+        div.className = 'geod3-script-block vbox';
+        div.style.backgroundColor = ACCENT_COLOR_2;
+        div.style.borderStyle = 'solid';
+        div.style.borderColor = ACCENT_COLOR_3;
+        const anp = this.anp;
+
+        const topDiv = div.createDiv('hbox');
+        topDiv.createEl('div', { text: 'If' } );
+        const conditionDiv = topDiv.createDiv();
+        const functionDiv = div.createDiv();
+
+        AFEI.SetParameterDiv(anp, this, conditionDiv, 0);
+        AFEI.SetParameterDiv(anp, this, functionDiv, 1);
+
+        this.CreateASIOrAFIParameterDiv(0, conditionDiv, ACCENT_COLOR_3);
+        this.CreateAFIParameterDiv(1, functionDiv, ACCENT_COLOR_3);
+    }
+}
+
+export class AIfRI extends AFRI {
+    async Execute(): Promise<void> {
+        const param1 = this.parameters[0];
+
+        const param1IsAFRI = param1 instanceof AFRI;
+
+        const condition = param1IsAFRI ? (await param1.Execute()).value : param1.value;
+
+        if (condition) {
+            const param2 = <AFRI> this.parameters[1];
+            await param2.Execute();
+        }
+    }
+}
+//#endregion If
+
+//#region Equals
+export class AEqualsI extends AFI {
+    type = AF.equals;
+    constructor(parameters: (ASI | AFI)[] | undefined) {
+        super()
+        const val1 = new ANumberI(Scope.Value, 'val1');
+        const val2 = new ANumberI(Scope.Value, 'val2');
+        val1.value = 0;
+        val2.value = 0;
+        this.defaultParameters = [val1, val2];
+        if (parameters !== undefined) {
+            this.parameters = parameters;
+        } else {
+            this.parameters.push(ASHandler.Copy(val1));
+            this.parameters.push(ASHandler.Copy(val2));
+        }
+    }
+}
+
+export class AEqualsEI extends AFEI {
+    instance: AEqualsI;
+    override DisplayBlock(): void {
+        this.div.empty();
+        const div = this.div;
+        div.className = 'geod3-script-block hbox';
+        div.style.backgroundColor = CENTRAL_COLOR_1;
+        div.style.borderStyle = 'solid';
+        div.style.borderColor = ACCENT_COLOR_3;
+        const anp = this.anp;
+
+        const val1Div = div.createDiv();
+        div.createEl('div', { text: '=' } );
+        const val2Div = div.createDiv();
+
+        AFEI.SetParameterDiv(anp, this, val1Div, 0);
+        AFEI.SetParameterDiv(anp, this, val2Div, 1);
+
+        this.CreateASIOrAFIParameterDiv(0, val1Div, CENTRAL_COLOR_3);
+        this.CreateASIOrAFIParameterDiv(1, val2Div, CENTRAL_COLOR_3);
+    }
+}
+
+export class AEqualsRI extends AFRI {
+    async Execute(): Promise<ABooleanI> {
+        const param1 = this.parameters[0];
+        const param2 = this.parameters[1];
+
+        const param1IsAFRI = param1 instanceof AFRI;
+        const param2IsAFRI = param2 instanceof AFRI;
+
+        const val1 = param1IsAFRI ? (await param1.Execute()).value : param1.value;
+        const val2 = param2IsAFRI ? (await param2.Execute()).value : param2.value;
+
+        const output = new ABooleanI(Scope.Value, 'sum');
+        output.value = val1 === val2;
+
+        return output;
+    }
+}
+//#endregion Equals
+
 //#region Add
 export class AAddI extends AFI {
     type = AF.add;
-    returnType = AS.number;
     constructor(parameters: (ASI | AFI)[] | undefined) {
         super()
         const num1 = new ANumberI(Scope.Value, 'num1');
@@ -561,13 +703,10 @@ export class AAddEI extends AFEI {
         this.div.empty();
         const div = this.div;
         div.className = 'geod3-script-block hbox';
-        div.style.backgroundColor = 'rgb(111, 46, 169)';
+        div.style.backgroundColor = CENTRAL_COLOR_1;
         div.style.borderStyle = 'solid';
-        div.style.borderColor = 'rgb(100, 109, 123)';
+        div.style.borderColor = ACCENT_COLOR_3;
         const anp = this.anp;
-
-        const num1 = this.instance.parameters[0];
-        const num2 = this.instance.parameters[1];
 
         const num1Div = div.createDiv();
         div.createEl('div', { text: '+' } );
@@ -576,49 +715,8 @@ export class AAddEI extends AFEI {
         AFEI.SetParameterDiv(anp, this, num1Div, 0);
         AFEI.SetParameterDiv(anp, this, num2Div, 1);
 
-        const adjustInputWidth = (input: HTMLInputElement) => {
-            const tempEl = div.createEl('div', { text: input.value } );
-            tempEl.style.position = 'absolute';
-            tempEl.style.visibility = 'hidden';
-            tempEl.style.whiteSpace = 'nowrap';
-            tempEl.style.font = 'inherit';
-            tempEl.style.padding = '10px';
-            input.style.width = tempEl.getBoundingClientRect().width + 'px';
-            tempEl.remove();
-        }
-
-        if (num1 instanceof ASI) {
-            const num1Input = num1Div.createEl('input', { type: 'text', value: num1.value + '' } );
-            num1Input.style.background = 'rgb(29, 0, 54)';
-            num1Input.style.padding = '1vh';
-            adjustInputWidth(num1Input);
-            num1Input.oninput = () => {
-                adjustInputWidth(num1Input);
-            }
-            num1Input.onchange = () => {
-                (<ASI> this.instance.parameters[0]).value = parseFloat(num1Input.value);
-            }
-        } else {
-            const num1EI = AFHandler.CreateEI(num1, num1Div, anp);
-            AFEI.MakeBlockDraggable(num1EI, anp, false);
-            num1EI.parentEI = this;
-        }
-        if (num2 instanceof ASI) {
-            const num2Input = num2Div.createEl('input', { type: 'text', value: num2.value + '' } );
-            num2Input.style.background = 'rgb(29, 0, 54)';
-            num2Input.style.padding = '1vh';
-            adjustInputWidth(num2Input);
-            num2Input.oninput = () => {
-                adjustInputWidth(num2Input);
-            }
-            num2Input.onchange = () => {
-                (<ASI> this.instance.parameters[1]).value = parseFloat(num2Input.value);
-            }
-        } else {
-            const num2EI = AFHandler.CreateEI(num2, num2Div, anp);
-            AFEI.MakeBlockDraggable(num2EI, anp, false);
-            num2EI.parentEI = this;
-        }
+        this.CreateASIOrAFIParameterDiv(0, num1Div, CENTRAL_COLOR_3);
+        this.CreateASIOrAFIParameterDiv(1, num2Div, CENTRAL_COLOR_3);
     }
 }
 
@@ -640,4 +738,3 @@ export class AAddRI extends AFRI {
     }
 }
 //#endregion Add
-
