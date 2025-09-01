@@ -10,6 +10,7 @@ node_modules
 
 # Don't include the compiled main.js file in the repo.
 # They should be uploaded to GitHub releases instead.
+main.js
 
 # im using this plugin for multiple vaults locally, and i dont wanna publish, so git pull is the easiest way to update them all
 # main.js

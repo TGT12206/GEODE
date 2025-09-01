@@ -109,6 +109,11 @@
 	border-color: var(--geod3-accent-color-1);
 	background-color: var(--geod3-central-color-2);
 }
+.geod3-file-properties {
+	border-left-style: solid;
+	border-left-color: var(--geod3-accent-color-3);
+	background-color: var(--geod3-bg-color-3);
+}
 /*#endregion Files*/
 
 /*#region Object List*/
