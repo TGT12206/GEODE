@@ -24,7 +24,7 @@ export class SceneView extends Tab {
         const sceneScrollWrapper = div.createDiv('geod3-scene-scroll-wrapper');
         const sceneWrapper = sceneScrollWrapper.createDiv('geod3-scene-wrapper');
         this.sceneDiv = sceneWrapper.createDiv('geod3-scene');
-        this.inspectorDiv = div.createDiv('geod3-inspector');
+        this.inspectorDiv = div.createDiv('geod3-inspector vbox');
 
         const listDiv = this.hierarchyDiv.createDiv('vbox');
 

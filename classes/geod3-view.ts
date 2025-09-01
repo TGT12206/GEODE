@@ -62,6 +62,7 @@ export class GEOD3View extends ItemView {
         submitButton.onclick = onSubmit;
         mainDivTemp.onkeydown = (e) => {
             if (e.key === 'Enter') {
+                mainDivTemp.blur();
                 mainDivTemp.onkeydown = () => {};
                 onSubmit();
             }

@@ -63,7 +63,7 @@ export class GEOD3ObjectII {
         this.instance = instance;
         this.anp = anp;
         div.empty();
-        const nameDiv = div.createDiv('hbox');
+        const nameDiv = div.createDiv('geod3-inspector-top-bar hbox');
         nameDiv.createEl('div', { text: this.instance.idInScene + ':' } );
         const nameInput = nameDiv.createEl('input', { type: 'text', value: this.instance.name } );
         const editScriptsButton = nameDiv.createEl('button', { text: 'Edit Scripts📜' } );
@@ -82,7 +82,7 @@ export class GEOD3ObjectII {
             varDiv.createEl('div', { text: asI.name } );
             ASHandler.CreateII(asI, varDiv.createDiv());
         }
-        const addNewDiv = div.createDiv('hbox');
+        const addNewDiv = div.createDiv('geod3-inspector-new-var hbox');
 
         const variableNameInput = addNewDiv.createEl('input', { type: 'text', value: 'unnamed' } );
         const variableTypeInput = addNewDiv.createEl('select');
@@ -141,7 +141,7 @@ export class GEOD3ObjectRI {
         this.SetObjDivCSSProperties();
     }
     private SetObjDivCSSProperties() {
-        this.objDiv.style.transform = 'translate(-50%, 0%)';
+        this.objDiv.style.transform = 'translate(-50%, 50%)';
         this.objDiv.style.position = 'absolute';
     }
     private RefreshSprite() {
