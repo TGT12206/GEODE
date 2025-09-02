@@ -1,6 +1,6 @@
 import { AppAndProject } from "classes/project";
 import { Scope } from "classes/scope";
-import { ABooleanI, ANumberI, AS, ASHandler, ASI, AStringI } from "classes/structs/struct";
+import { ABooleanI, ANumberI, AS, ASHandler, ASI, AStringI } from "classes/amethyst-scripting/structs/struct";
 import { GEOD3ObjectHandler } from "classes/tabs/geod3-object";
 import { BG_COLOR_1, BG_COLOR_2, BG_COLOR_3, ACCENT_COLOR_1, ACCENT_COLOR_2, ACCENT_COLOR_3, CENTRAL_COLOR_1, CENTRAL_COLOR_2, CENTRAL_COLOR_3, REMOVE_COLOR_1, REMOVE_COLOR_2 } from "colors";
 

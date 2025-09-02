@@ -1,6 +1,6 @@
 import { Tab } from "./tab";
 import { GEOD3Object } from "./geod3-object";
-import { AChainI, ADoNothingI, AF, AFEI, AFHandler } from "classes/functions/function";
+import { AChainI, ADoNothingI, AF, AFEI, AFHandler } from "classes/amethyst-scripting/functions/function";
 
 export class ScriptEditor extends Tab {
     static override icon = '📜';

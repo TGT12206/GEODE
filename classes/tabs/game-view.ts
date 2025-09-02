@@ -1,4 +1,4 @@
-import { AKeydownI } from "classes/functions/function";
+import { AKeydownI } from "classes/amethyst-scripting/functions/function";
 import { GEOD3ObjectHandler, GEOD3ObjectRI } from "./geod3-object";
 import { Tab } from "./tab";
 

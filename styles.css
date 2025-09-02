@@ -54,7 +54,7 @@
 }
 /*#endregion Essential Layout*/
 
-.geod3-main-div {
+.geode-main-div {
 	width: 100%;
 	height: 100%;
 	background-color: var(--geod3-bg-color-1);
@@ -191,6 +191,12 @@
 	border-color: var(--geod3-accent-color-2);
 	gap: 1vh;
 	background-color: var(--geod3-central-color-2);
+}
+.geode-temporary-width-checker {
+	position: absolute;
+	visibility: hidden;
+	white-space: nowrap;
+	font: inherit;
 }
 /*#endregion Inspector*/
 

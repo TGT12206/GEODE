@@ -1,7 +1,7 @@
-import { AFHandler, AFI, AFRI } from "classes/functions/function";
+import { AFHandler, AFI, AFRI } from "classes/amethyst-scripting/functions/function";
 import { AppAndProject } from "classes/project";
 import { Scope } from "classes/scope";
-import { AS, ASHandler, ASI } from "classes/structs/struct";
+import { AS, ASHandler, ASI } from "classes/amethyst-scripting/structs/struct";
 import { ImageFile, VideoFile } from "./file-types/real-file";
 
 export class GEOD3ObjectHandler {

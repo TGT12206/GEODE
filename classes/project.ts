@@ -5,8 +5,8 @@ import { SceneView } from "./tabs/scene-view";
 import { ScriptEditor } from "./tabs/script-editor";
 import { Tab } from "./tabs/tab";
 import { GEOD3Object } from "./tabs/geod3-object";
-import { ASHandler } from "./structs/struct";
-import { AF, AFHandler, AFI } from "./functions/function";
+import { ASHandler } from "./amethyst-scripting/structs/struct";
+import { AF, AFHandler, AFI } from "./amethyst-scripting/functions/function";
 
 export class Project {
     pathToProject: string;

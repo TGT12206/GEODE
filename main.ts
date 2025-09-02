@@ -1,42 +1,71 @@
-import { GEOD3View, VIEW_TYPE_GEOD3_PROJECT } from 'classes/geod3-view';
+import { GEODEView, VIEW_TYPE_GEODE_PROJECT } from 'classes/geode-view';
 import { App, Notice, Plugin, PluginSettingTab, Setting, WorkspaceLeaf } from 'obsidian';
 
 /**
- * GEO:D3 stands for Game Engine in Obsidian: Developed by 3rd-party.
+ * For anyone reading this code, here's a quick layout:
+ * 
+ * In the view for this plugin, there are 4 "tabs".
+ * - the File Manager: Accesses and stores files to a project folder that was specified by the user.
+ * - the Scene View: Allows users to create new objects, add variables to those objects, and initialize those variables.
+ * - the Script Editor: Allows users to edit scripts on their objects using a block based scripting language (I'm calling it Amethyst)
+ * - the Game View: Runs the game created by the user
+ * 
+ * Behind the scenes (Amethyst):
+ * - Structs: Structs are the variables that can be used by users in their scripts
+ * 		(or the plugin, in the case of default variables). They hold values and nothing more,
+ * 		no functions within them or subclasses or anything. Think of them as primitive types.
+ * - Functions: Functions are the blocks that can be used by users to write their scripts.
+ * - Scripts (Clusters/Hooks): On Start/On New Frame are clusters where the user can add blocks.
+ *		If an object has more than 1 cluster of the same type, they are called asynchronously
+ * 		when their corresponding event happens.
+ * - Objects: Objects have a set of default variables, and users can add more.
+ * 		The values set by the user are the ones used at the start of the game.
  */
-interface GEOD3Settings {
-	projectPath: string;
+
+/**
+ * Settings for the GEODE plugin
+ */
+interface GEODESettings {
+	/**
+	 * The vault path to automatically fill in for the project path.
+	 * 
+	 * You can have more than one project in a vault.
+	 */
+	defaultProjectPath: string;
 }
 
-const DEFAULT_SETTINGS: GEOD3Settings = {
-	projectPath: 'New GEOD3 Project'
+const DEFAULT_SETTINGS: GEODESettings = {
+	defaultProjectPath: 'New GEODE Project'
 }
 
-export default class GEOD3 extends Plugin {
-	settings: GEOD3Settings;
+/**
+ * GEODE stands for Game Engine for Open Development by Everyone...or whatever you want it to stand for.
+ */
+export default class GEODE extends Plugin {
+	settings: GEODESettings;
 
 	async onload() {
 		await this.loadSettings();
 
 		this.registerView(
-			VIEW_TYPE_GEOD3_PROJECT,
-			(leaf) => new GEOD3View(leaf, this.settings.projectPath)
+			VIEW_TYPE_GEODE_PROJECT,
+			(leaf) => new GEODEView(leaf, this.settings.defaultProjectPath)
 		);
 
-		this.addRibbonIcon('boxes', 'Open GEOD3', () => {
-			this.activateView(VIEW_TYPE_GEOD3_PROJECT);
+		this.addRibbonIcon('boxes', 'Open GEODE', () => {
+			this.activateView(VIEW_TYPE_GEODE_PROJECT);
 		});
 
 		this.addCommand({
-			id: 'open-geod3-view',
-			name: 'Open GEOD3',
+			id: 'open-geode-view',
+			name: 'Open GEODE',
 			callback: () => {
-				this.activateView(VIEW_TYPE_GEOD3_PROJECT);
+				this.activateView(VIEW_TYPE_GEODE_PROJECT);
 			}
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new GEODESettingTab(this.app, this));
 	}
 
 	onunload() {
@@ -63,10 +92,10 @@ export default class GEOD3 extends Plugin {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: GEOD3;
+class GEODESettingTab extends PluginSettingTab {
+	plugin: GEODE;
 
-	constructor(app: App, plugin: GEOD3) {
+	constructor(app: App, plugin: GEODE) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -78,12 +107,12 @@ class SampleSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Default Project Folder')
-			.setDesc('The vault path to automatically fill in for the project path')
+			.setDesc('The vault path to automatically fill in for the project path. You can have more than one project in a vault.')
 			.addText(text => text
-				.setPlaceholder('Default Source Path')
-				.setValue(this.plugin.settings.projectPath)
+				.setPlaceholder('Default Project Path')
+				.setValue(this.plugin.settings.defaultProjectPath)
 				.onChange(async (value) => {
-					this.plugin.settings.projectPath = value;
+					this.plugin.settings.defaultProjectPath = value;
 					await this.plugin.saveSettings();
 				}));
 	}
