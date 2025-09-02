@@ -1,5 +1,5 @@
-# GEOD3
-A game engine (think about the level of scratch) within obsidian (GEO:D3 / GEODE stands for Game Engine in Obsidian: Developed by 3rd-party. Could also be Game Engine in Obsidian Despite Everything, or anything else it could stand for, really.)
+# GEODE
+A game maker (think about the level of scratch). GEODE stands for: Game Engine for Open Development by Everyone (or anything else. open to suggestions)
 - Block based visual scripting (it's called amethyst)
 - Project data is saved in markdown files, except for files put into the project folder by the user (such as images or videos)
 - 4 tabs: File Manager, Scene View, Script Editor, Game View
