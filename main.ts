@@ -77,8 +77,8 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Default Source Path')
-			.setDesc('The vault path to automatically fill in for the source path')
+			.setName('Default Project Folder')
+			.setDesc('The vault path to automatically fill in for the project path')
 			.addText(text => text
 				.setPlaceholder('Default Source Path')
 				.setValue(this.plugin.settings.projectPath)

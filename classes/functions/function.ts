@@ -230,23 +230,15 @@ export abstract class AFEI {
             if (scriptEditor.currentlyDraggedBlock === undefined) {
                 return;
             }
-            let newBlock;
-            let newBlockDiv;
-            if (scriptEditor.currentlyDraggedBlockIsCopy) {
-                const newBlockInstance = AFHandler.Copy(scriptEditor.currentlyDraggedBlock.instance);
-                newBlockDiv = <HTMLDivElement> scriptEditor.currentlyDraggedBlock.div.cloneNode(true);
-                newBlock = AFHandler.CreateEI(newBlockInstance, newBlockDiv, anp);
-            } else {
-                if (scriptEditor.currentlyDraggedBlock.parentEI !== undefined) {
-                    const parentEI = scriptEditor.currentlyDraggedBlock.parentEI;
-                    parentEI.RemoveParameter(scriptEditor.currentlyDraggedBlock.instance);
-                    parentEI.DisplayBlock();
-                }
-                newBlockDiv = scriptEditor.currentlyDraggedBlock.div;
-                newBlock = scriptEditor.currentlyDraggedBlock;
-                newBlockDiv.detach();
+            const shouldCopy = scriptEditor.currentlyDraggedBlockIsCopy;
+            const droppedBlock = scriptEditor.currentlyDraggedBlock;
+            const newInstance = shouldCopy ? AFHandler.Copy(droppedBlock.instance) : droppedBlock.instance;
+            afei.instance.parameters[paramIndex] = newInstance;
+            if (!(droppedBlock.parentEI === undefined || shouldCopy)) {
+                const parentEI = droppedBlock.parentEI;
+                parentEI.RemoveParameter(droppedBlock.instance);
+                parentEI.DisplayBlock();
             }
-            afei.instance.parameters[paramIndex] = newBlock.instance;
             afei.DisplayBlock();
             event.preventDefault();
             scriptEditor.currentlyDraggedBlock = undefined;
@@ -555,6 +547,7 @@ export class ASetEI extends AFEI {
 
         AFEI.AdjustInputWidth(objIDInput, div);
         AFEI.AdjustInputWidth(varNameInput, div);
+        console.log('displayed set');
     }
     override RemoveParameter(parameter: AFI): void {
         if (this.instance.parameters[2] === parameter) {

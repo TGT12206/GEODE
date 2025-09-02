@@ -1,4 +1,3 @@
-import { normalizePath } from "obsidian";
 import { Tab } from "./tab";
 import { AppAndProject } from "classes/project";
 import { GEOD3Object, GEOD3ObjectHandler } from "./geod3-object";
