@@ -6,7 +6,8 @@ import { AmethystStruct } from "../struct";
 export class AmethystNumber extends AmethystStruct {
     type = 'number';
     value: number;
-    constructor(value = 0, name = '') {
+    constructor(value: number | undefined = undefined, name = '') {
+        value = value === undefined ? 0 : value;
         super(value, name);
     }
 }

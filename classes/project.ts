@@ -1,19 +1,20 @@
 import { App, normalizePath } from "obsidian";
-import { GEOD3FileManager } from "./tabs/file-manager";
 import { GameView } from "./tabs/game-view";
 import { SceneView } from "./tabs/scene-view";
 import { ScriptEditor } from "./tabs/script-editor";
 import { Tab } from "./tabs/tab";
-import { GEOD3Object } from "./tabs/geod3-object";
-import { ASHandler } from "./amethyst-scripting/structs/struct";
-import { AF, AFHandler, AFI } from "./amethyst-scripting/functions/function";
+import { GEODEObject } from "./geode-objects/geode-object";
+import { GEODEFileManager } from "./tabs/file-manager";
+import { AmethystFunction } from "./amethyst-scripting/functions/function";
+import { AmethystFunctionHandler } from "./amethyst-scripting/functions/function-handler";
+import { AmethystStructHandler } from "./amethyst-scripting/structs/struct-handler";
 
 export class Project {
     pathToProject: string;
     tabs: Tab[];
 
-    get fileManager(): GEOD3FileManager {
-        return <GEOD3FileManager> this.tabs[0];
+    get fileManager(): GEODEFileManager {
+        return <GEODEFileManager> this.tabs[0];
     }
 
     get sceneView(): SceneView {
@@ -52,7 +53,7 @@ export class Project {
     constructor(app: App) {
         this.anp = new AppAndProject(app, this);
         this.tabs = [];
-        this.tabs.push(new GEOD3FileManager(this.anp));
+        this.tabs.push(new GEODEFileManager(this.anp));
         this.tabs.push(new SceneView(this.anp));
         this.tabs.push(new ScriptEditor(this.anp));
         this.tabs.push(new GameView(this.anp));
@@ -83,13 +84,13 @@ export class Project {
         const data = await this.anp.app.vault.cachedRead(tFile);
         const plainObj = JSON.parse(data);
         sv.objects = plainObj.objects;
-        const loadFunction = (plainFunct: any): AFI => {
-            const newFunct = Object.assign(AFHandler.CreateI(plainFunct.type, plainFunct.parameters), plainFunct);
+        const loadFunction = (plainFunct: any): AmethystFunction => {
+            const newFunct = Object.assign(AmethystFunctionHandler.Create(plainFunct.type, plainFunct.parameters), plainFunct);
             for (let i = 0; i < newFunct.defaultParameters.length; i++) {
                 const isStruct = plainFunct.defaultParameters[i].name !== undefined;
                 if (isStruct) {
                     const plainStruct = plainFunct.defaultParameters[i];
-                    newFunct.defaultParameters[i] = Object.assign(ASHandler.CreateI(plainStruct.type, plainStruct.scope, plainStruct.name), plainStruct);
+                    newFunct.defaultParameters[i] = Object.assign(AmethystStructHandler.Create(plainStruct.type, plainStruct.value, plainStruct.name), plainStruct);
                 } else {
                     newFunct.defaultParameters[i] = loadFunction(plainFunct.defaultParameters[i]);
                 }
@@ -98,7 +99,7 @@ export class Project {
                 const isStruct = plainFunct.parameters[i].name !== undefined;
                 if (isStruct) {
                     const plainStruct = plainFunct.parameters[i];
-                    newFunct.parameters[i] = Object.assign(ASHandler.CreateI(plainStruct.type, plainStruct.scope, plainStruct.name), plainStruct);
+                    newFunct.parameters[i] = Object.assign(AmethystStructHandler.Create(plainStruct.type, plainStruct.value, plainStruct.name), plainStruct);
                 } else {
                     newFunct.parameters[i] = loadFunction(plainFunct.parameters[i]);
                 }
@@ -106,11 +107,11 @@ export class Project {
             return newFunct;
         }
         for (let i = 0; i < plainObj.objects.length; i++) {
-            const newObj = Object.assign(new GEOD3Object(i), plainObj.objects[i]);
+            const newObj = Object.assign(new GEODEObject(i), plainObj.objects[i]);
             sv.objects[i] = newObj;
             for (let j = 0; j < newObj.variables.length; j++) {
                 const plainVar = sv.objects[i].variables[j];
-                const newVar = Object.assign(ASHandler.CreateI(plainVar.type, plainVar.scope, plainVar.name), plainVar);
+                const newVar = Object.assign(AmethystStructHandler.Create(plainVar.type, plainVar.value, plainVar.name), plainVar);
                 sv.objects[i].variables[j] = newVar;
             }
             for (let j = 0; j < newObj.onStart.length; j++) {
@@ -134,7 +135,7 @@ export class Project {
 
         const tabIcons: HTMLElement[] = [];
 
-        const filesTab = tabBar.createEl('button', { text: GEOD3FileManager.icon } );
+        const filesTab = tabBar.createEl('button', { text: GEODEFileManager.icon } );
         const sceneViewTab = tabBar.createEl('button', { text: SceneView.icon } );
         const scriptEditorTab = tabBar.createEl('button', { text: ScriptEditor.icon } );
         const gameTab = tabBar.createEl('button', { text: GameView.icon } );
@@ -198,8 +199,8 @@ export class AppAndProject {
 }
 
 export class SceneDTO {
-    objects: GEOD3Object[];
-    constructor(objects: GEOD3Object[] = []) {
+    objects: GEODEObject[];
+    constructor(objects: GEODEObject[] = []) {
         this.objects = objects;
     }
 }

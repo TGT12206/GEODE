@@ -1,14 +1,16 @@
 import { Tab } from "./tab";
-import { GEOD3Object } from "./geod3-object";
-import { AChainI, ADoNothingI, AF, AFEI, AFHandler } from "classes/amethyst-scripting/functions/function";
+import { GEODEObject } from "../geode-objects/geode-object";
+import { AmethystFunction } from "classes/amethyst-scripting/functions/function";
+import { AmethystBlock } from "classes/amethyst-scripting/functions/block";
+import { AmethystFunctionHandler } from "classes/amethyst-scripting/functions/function-handler";
 
 export class ScriptEditor extends Tab {
     static override icon = '📜';
     scriptDiv: HTMLDivElement;
     blocksDiv: HTMLDivElement;
     delDiv: HTMLDivElement;
-    currentObject: GEOD3Object;
-    currentlyDraggedBlock: AFEI | undefined;
+    currentObject: GEODEObject;
+    currentlyDraggedBlock: AmethystBlock | undefined;
     currentlyDraggedBlockIsCopy: boolean;
 
     override async Focus(div: HTMLDivElement): Promise<void> {
@@ -56,10 +58,12 @@ export class ScriptEditor extends Tab {
             const index = parseInt(clusterNumberInput.value);
 
             if (index >= scriptType.length) {
-                scriptType.push(new AChainI([new ADoNothingI()]));
+                const doNothing = AmethystFunctionHandler.Create('none');
+                const chain = AmethystFunctionHandler.Create('chain', [doNothing]);
+                scriptType.push(chain);
                 clusterNumberInput.max = scriptType.length + '';
             }
-            AFHandler.CreateEI(scriptType[index], this.scriptDiv.createDiv(), this.anp);
+            AmethystFunctionHandler.CreateBlock(scriptType[index], this.scriptDiv.createDiv(), this.anp);
         }
         this.CreateBlockPool();
         LoadScript();
@@ -111,32 +115,13 @@ export class ScriptEditor extends Tab {
             }
         });
         
-        const chainI = AFHandler.CreateI(AF.chain, undefined);
-        const getI = AFHandler.CreateI(AF.get, undefined);
-        const setI = AFHandler.CreateI(AF.set, undefined);
-        const ifI = AFHandler.CreateI(AF.if, undefined);
-        const ifElseI = AFHandler.CreateI(AF.ifelse, undefined);
-        const compareI = AFHandler.CreateI(AF.compare, undefined);
-        const keydownI = AFHandler.CreateI(AF.keydown, undefined);
-        const addI = AFHandler.CreateI(AF.add, undefined);
-
-        const chainBlock = AFHandler.CreateEI(chainI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const getBlock = AFHandler.CreateEI(getI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const setBlock = AFHandler.CreateEI(setI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const ifBlock = AFHandler.CreateEI(ifI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const ifElseBlock = AFHandler.CreateEI(ifElseI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const compareBlock = AFHandler.CreateEI(compareI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const keydownBlock = AFHandler.CreateEI(keydownI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-        const addBlock = AFHandler.CreateEI(addI, this.blocksDiv.createDiv('geod3-script-block'), this.anp);
-
-        AFEI.MakeBlockDraggable(chainBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(getBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(setBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(ifBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(ifElseBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(compareBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(keydownBlock, this.anp, true);
-        AFEI.MakeBlockDraggable(addBlock, this.anp, true);
+        const knownTypes = AmethystFunction.knownTypes;
+        const anp = this.anp;
+        for (let i = 1; i < knownTypes.length; i++) {
+            const instance = AmethystFunctionHandler.Create(knownTypes[i]);
+            const block = AmethystFunctionHandler.CreateBlock(instance, this.blocksDiv.createDiv(), anp);
+            AmethystBlock.MakeBlockDraggable(block, anp, true);
+        }
     }
 
 

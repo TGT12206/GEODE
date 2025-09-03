@@ -1,10 +1,11 @@
 import { Tab } from "./tab";
 import { AppAndProject } from "classes/project";
-import { GEOD3Object, GEOD3ObjectHandler } from "./geod3-object";
+import { GEODEObject } from "../geode-objects/geode-object";
+import { GEODEObjectHandler } from "classes/geode-objects/geode-object-handler";
 
 export class SceneView extends Tab {
     static override icon = '🌐';
-    objects: GEOD3Object[];
+    objects: GEODEObject[];
     hierarchyDiv: HTMLDivElement;
     sceneDiv: HTMLDivElement;
     inspectorDiv: HTMLDivElement;
@@ -32,7 +33,7 @@ export class SceneView extends Tab {
             const currObj = this.objects[i];
             objectDiv.textContent = currObj.idInScene + ': ' + currObj.name;
             objectDiv.onclick = () => {
-                GEOD3ObjectHandler.CreateII(currObj, this.anp, this.inspectorDiv);
+                GEODEObjectHandler.CreateEditor(currObj, this.anp, this.inspectorDiv);
             }
         }
         const buttonsDiv = this.hierarchyDiv.createDiv('hbox');
@@ -45,18 +46,18 @@ export class SceneView extends Tab {
         refreshButton.onclick = () => {
             this.sceneDiv.empty();
             for (let i = 0; i < this.objects.length; i++) {
-                const currObj = GEOD3ObjectHandler.CreateRI(this.objects[i], this.anp, this.sceneDiv.createDiv());
+                const currObj = GEODEObjectHandler.CreateRuntimeObject(this.objects[i], this.anp, this.sceneDiv.createDiv());
                 currObj.Render();
             }
         }
         addObjButton.onclick = () => {
             const index = this.objects.length;
-            const newObj = new GEOD3Object(index);
+            const newObj = new GEODEObject(index);
             const objectDiv = listDiv.createDiv('geod3-object-in-list hbox pointer-hover');
             objectDiv.createEl('div', { text: newObj.idInScene + ': ' + newObj.name } );
             this.objects.push(newObj);
             objectDiv.onclick = () => {
-                GEOD3ObjectHandler.CreateII(newObj, this.anp, this.inspectorDiv);
+                GEODEObjectHandler.CreateEditor(newObj, this.anp, this.inspectorDiv);
             }
         }
     }

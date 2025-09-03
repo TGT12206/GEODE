@@ -19,7 +19,7 @@ export class AmethystStructHandler {
      * @param name The name of the variable (optional).
      * @returns The new variable.
      */
-    static Create(type: string, value: any, name = ''): AmethystStruct {
+    static Create(type: string, value: any = undefined, name = ''): AmethystStruct {
         switch(type) {
             case 'none':
             case 'boolean':
@@ -34,7 +34,7 @@ export class AmethystStructHandler {
     
     /**
      * Creates a shallow copy of the Amethyst variable provided.
-     * The new copy will have the name 'Copy of {original name}'.
+     * The new copy will have the same name as the original.
      * @param obj The variable to copy.
      * @returns The copied variable.
      */
@@ -44,11 +44,11 @@ export class AmethystStructHandler {
             case 'none':
             case 'boolean':
             default:
-                return newObj = new AmethystBoolean(obj.value, 'Copy of ' + obj.name);
+                return newObj = new AmethystBoolean(obj.value, obj.name);
             case 'number':
-                return newObj = new AmethystNumber(obj.value, 'Copy of ' + obj.name);
+                return newObj = new AmethystNumber(obj.value, obj.name);
             case 'string':
-                return new AmethystString(obj.value, 'Copy of ' + obj.name);
+                return new AmethystString(obj.value, obj.name);
         }
     }
 

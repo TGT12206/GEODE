@@ -10,7 +10,7 @@ export abstract class AmethystStruct {
         'boolean',
         'number',
         'string'
-    ]
+    ];
 
     /**
      * The type of the variable (must be one of the values in AmethystStruct.knownTypes)

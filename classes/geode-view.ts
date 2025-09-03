@@ -63,7 +63,7 @@ export class GEODEView extends ItemView {
         this.project = new Project(this.app);
         this.project.pathToProject = projectPath;
         if (!await this.app.vault.adapter.exists(dataPath)) {
-            this.CreateDataFile(dataPath);
+            await this.CreateDataFile(dataPath);
         }
         await this.project.Load();
         await this.project.Display(mainDiv);

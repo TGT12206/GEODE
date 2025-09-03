@@ -6,7 +6,8 @@ import { AmethystStruct } from "../struct";
 export class AmethystBoolean extends AmethystStruct {
     type = 'boolean';
     value: boolean;
-    constructor(value = false, name = '') {
+    constructor(value: boolean | undefined = undefined, name = '') {
+        value = value === undefined ? false : value;
         super(value, name);
     }
 }

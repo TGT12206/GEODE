@@ -1,15 +1,15 @@
 :root {
-	--geod3-bg-color-1: rgb(37, 37, 44);
-	--geod3-bg-color-2: rgb(18, 18, 24);
-	--geod3-bg-color-3: rgb(5, 5, 8);
-	--geod3-accent-color-1: rgb(223, 236, 255);
-	--geod3-accent-color-2: rgb(160, 169, 184);
-	--geod3-accent-color-3: rgb(100, 109, 123);
-	--geod3-central-color-1: rgb(111, 46, 169);
-	--geod3-central-color-2: rgb(78, 17, 131);
-	--geod3-central-color-3: rgb(29, 0, 54);
-	--geod3-remove-color: rgb(198, 68, 68);
-	--geod3-remove-color-hover: rgb(138, 0, 0);
+	--geode-bg-color-1: rgb(37, 37, 44);
+	--geode-bg-color-2: rgb(18, 18, 24);
+	--geode-bg-color-3: rgb(5, 5, 8);
+	--geode-accent-color-1: rgb(223, 236, 255);
+	--geode-accent-color-2: rgb(160, 169, 184);
+	--geode-accent-color-3: rgb(100, 109, 123);
+	--geode-central-color-1: rgb(111, 46, 169);
+	--geode-central-color-2: rgb(78, 17, 131);
+	--geode-central-color-3: rgb(29, 0, 54);
+	--geode-remove-color: rgb(198, 68, 68);
+	--geode-remove-color-hover: rgb(138, 0, 0);
 }
 
 /*#region Essential Layout*/
@@ -26,171 +26,171 @@
 :is(button, .pointer-hover):hover {
 	cursor: pointer;
 }
-:is(button.geod3-add-button, .geod3-add-button) {
+:is(button.geode-add-button, .geode-add-button) {
 	padding: 0.5vh;
 	border-radius: 0.5vh;
-	color: var(--geod3-central-color-3);
-	background-color: var(--geod3-accent-color-2);
+	color: var(--geode-central-color-3);
+	background-color: var(--geode-accent-color-2);
 }
-:is(button.geod3-add-button, .geod3-add-button):hover {
-	background-color: var(--geod3-accent-color-3);
+:is(button.geode-add-button, .geode-add-button):hover {
+	background-color: var(--geode-accent-color-3);
 }
-:is(button.geod3-secondary-button, .geod3-secondary-button) {
+:is(button.geode-secondary-button, .geode-secondary-button) {
 	padding: 0.5vh;
 	border-radius: 0.5vh;
-	background-color: var(--geod3-central-color-1);
+	background-color: var(--geode-central-color-1);
 }
-:is(button.geod3-secondary-button, .geod3-secondary-button):hover {
-	background-color: var(--geod3-central-color-2);
+:is(button.geode-secondary-button, .geode-secondary-button):hover {
+	background-color: var(--geode-central-color-2);
 }
-:is(button.geod3-remove-button, .geod3-remove-button) {
+:is(button.geode-remove-button, .geode-remove-button) {
 	padding: 0.5vh;
 	border-radius: 0.5vh;
-	color: var(--geod3-central-color-3);
-	background-color: var(--geod3-remove-color);
+	color: var(--geode-central-color-3);
+	background-color: var(--geode-remove-color);
 }
-:is(button.geod3-remove-button, .geod3-remove-button):hover {
-	background-color: var(--geod3-remove-color-hover);
+:is(button.geode-remove-button, .geode-remove-button):hover {
+	background-color: var(--geode-remove-color-hover);
 }
 /*#endregion Essential Layout*/
 
 .geode-main-div {
 	width: 100%;
 	height: 100%;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
 
 /*#region Tabs*/
-.geod3-tab-bar {
-	background-color: var(--geod3-bg-color-1);
+.geode-tab-bar {
+	background-color: var(--geode-bg-color-1);
 	border-bottom-style: solid;
-	border-color: var(--geod3-accent-color-1);
+	border-color: var(--geode-accent-color-1);
 	padding: 0.5vw;
 	gap: 0.5vw;
 }
-:is(button.geod3-tab-icon, .geod3-tab-icon) {
+:is(button.geode-tab-icon, .geode-tab-icon) {
 	width: 10%;
-	background-color: var(--geod3-accent-color-2);
+	background-color: var(--geode-accent-color-2);
 }
-:is(:is(button.geod3-tab-icon, .geod3-tab-icon):hover, :is(button.geod3-tab-icon-opened, .geod3-tab-icon-opened)) {
+:is(:is(button.geode-tab-icon, .geode-tab-icon):hover, :is(button.geode-tab-icon-opened, .geode-tab-icon-opened)) {
 	width: 10%;
-	background-color: var(--geod3-accent-color-3);
+	background-color: var(--geode-accent-color-3);
 }
-.geod3-tab-container {
+.geode-tab-container {
 	width: 100%;
 	height: 98%;
 	position: relative;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
 /*#endregion Tabs*/
 
 /*#region Files*/
-.geod3-folder {
-	background-color: var(--geod3-bg-color-1);
+.geode-folder {
+	background-color: var(--geode-bg-color-1);
 	display: grid;
 	gap: 1vw;
 	grid-template-columns: repeat(8, 1fr);
 }
-.geod3-file-thumbnail {
+.geode-file-thumbnail {
 	width: 100%;
 	aspect-ratio: 1;
 	padding: 1%;
 	border-style: solid;
 	border-radius: 5%;
-	border-color: var(--geod3-accent-color-1);
-	background-color: var(--geod3-bg-color-2);
+	border-color: var(--geode-accent-color-1);
+	background-color: var(--geode-bg-color-2);
 }
-:is(.geod3-file-thumbnail:hover, .geod3-file-thumbnail.selected) {
+:is(.geode-file-thumbnail:hover, .geode-file-thumbnail.selected) {
 	width: 100%;
 	aspect-ratio: 1;
 	padding: 1%;
 	border-style: solid;
 	border-radius: 5%;
-	border-color: var(--geod3-accent-color-1);
-	background-color: var(--geod3-central-color-2);
+	border-color: var(--geode-accent-color-1);
+	background-color: var(--geode-central-color-2);
 }
-.geod3-file-properties {
+.geode-file-properties {
 	border-left-style: solid;
-	border-left-color: var(--geod3-accent-color-3);
-	background-color: var(--geod3-bg-color-3);
+	border-left-color: var(--geode-accent-color-3);
+	background-color: var(--geode-bg-color-3);
 }
 /*#endregion Files*/
 
 /*#region Object List*/
-.geod3-object-list {
+.geode-object-list {
 	width: 10%;
 	height: 100%;
 	padding: 0.5vh;
 	gap: 0.5vh;
-	background-color: var(--geod3-bg-color-2);
+	background-color: var(--geode-bg-color-2);
 }
-.geod3-object-in-list {
+.geode-object-in-list {
 	padding: 0.5vh;
 	border-style: solid;
 	border-radius: 0.5vh;
-	border-color: var(--geod3-accent-color-2);
-	background-color: var(--geod3-central-color-2);
+	border-color: var(--geode-accent-color-2);
+	background-color: var(--geode-central-color-2);
 	transition: ease 100ms;
 }
-.geod3-object-in-list:hover {
+.geode-object-in-list:hover {
 	padding: 0.75vh;
-	background-color: var(--geod3-central-color-3);
+	background-color: var(--geode-central-color-3);
 }
 /*#endregion Object List*/
 
 /*#region Scene Layout*/
-.geod3-scene-scroll-wrapper {
+.geode-scene-scroll-wrapper {
 	position: relative;
 	overflow: auto;
 	width: 60%;
 	height: 100%;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
-.geod3-scene-wrapper {
+.geode-scene-wrapper {
 	position: absolute;
 	bottom: 50%;
 	left: 50%;
 }
-.geod3-scene {
+.geode-scene {
 	position: relative;
 }
 /*#endregion Scene Layout*/
 
 /*#region Inspector*/
-.geod3-inspector {
+.geode-inspector {
 	width: 30%;
 	height: 100%;
 	padding: 2vh;
 	gap: 1vh;
-	background-color: var(--geod3-bg-color-2);
+	background-color: var(--geode-bg-color-2);
 }
-.geod3-inspector-top-bar {
+.geode-inspector-top-bar {
 	width: 100%;
 	gap: 1vh;
 }
-.geod3-inspector-new-var {
+.geode-inspector-new-var {
 	width: 100%;
 	gap: 1vh;
 }
-.geod3-inspector-variable-list {
+.geode-inspector-variable-list {
 	width: 100%;
 	height: 87.5%;
 	overflow: scroll;
 	padding: 1vh;
-	background-color: var(--geod3-accent-color-3);
+	background-color: var(--geode-accent-color-3);
 	border-style: solid;
 	border-radius: 2vh;
-	border-color: var(--geod3-accent-color-1);
+	border-color: var(--geode-accent-color-1);
 	gap: 1vh;
 }
-.geod3-inspector-variable {
+.geode-inspector-variable {
 	width: 100%;
 	padding: 0.5vh;
 	border-radius: 0.5vh;
 	border-style: solid;
-	border-color: var(--geod3-accent-color-2);
+	border-color: var(--geode-accent-color-2);
 	gap: 1vh;
-	background-color: var(--geod3-central-color-2);
+	background-color: var(--geode-central-color-2);
 }
 .geode-temporary-width-checker {
 	position: absolute;
@@ -201,39 +201,39 @@
 /*#endregion Inspector*/
 
 /*#region Script Editor*/
-.geod3-script-wrapper {
+.geode-script-wrapper {
 	width: 70%;
 	height: 100%;
 	overflow: scroll;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
-.geod3-script {
+.geode-script {
 	width: fit-content;
 	height: fit-content;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
-.geod3-script-navigator {
-	background-color: var(--geod3-bg-color-2);
+.geode-script-navigator {
+	background-color: var(--geode-bg-color-2);
 	border-bottom-style: solid;
-	border-color: var(--geod3-accent-color-3);
+	border-color: var(--geode-accent-color-3);
 	padding: 0.5vw;
 	gap: 0.5vw;
 }
-.geod3-block-pool {
+.geode-block-pool {
 	width: 30%;
 	height: 100%;
-	background-color: var(--geod3-bg-color-2);
+	background-color: var(--geode-bg-color-2);
 }
-.geod3-blocks-list {
+.geode-blocks-list {
 	padding: 0.5vh;
 	width: 100%;
 	height: 100%;
 	overflow: scroll;
 	gap: 1vh;
 	border-left-style: solid;
-	border-color: var(--geod3-accent-color-3);
+	border-color: var(--geode-accent-color-3);
 }
-.geod3-script-block {
+.geode-script-block {
 	width: fit-content;
 	height: fit-content;
 	border-radius: 1vh;
@@ -242,32 +242,32 @@
 	min-width: 4vh;
 	gap: 0.5vh;
 }
-.geod3-script-block-inner-section {
+.geode-script-block-inner-section {
 	gap: 0.5vh;
 }
-.geod3-script-block:hover {
+.geode-script-block:hover {
 	cursor: pointer;
 }
-.geod3-block-delete-div {
-	background-color: var(--geod3-remove-color);
+.geode-block-delete-div {
+	background-color: var(--geode-remove-color);
 }
-.geod3-block-delete-div-hover {
-	background-color: var(--geod3-remove-color-hover);
+.geode-block-delete-div-hover {
+	background-color: var(--geode-remove-color-hover);
 }
 /*#endregion Script Editor*/
 
 /*#region Game View*/
-.geod3-game-view-main-div {
+.geode-game-view-main-div {
 	position: relative;
 	overflow: hidden;
-	background-color: var(--geod3-bg-color-1);
+	background-color: var(--geode-bg-color-1);
 }
-.geod3-game-wrapper {
+.geode-game-wrapper {
 	position: absolute;
 	bottom: 50%;
 	left: 50%;
 }
-.geod3-game {
+.geode-game {
 	position: relative;
 }
 /*#endregion Game View*/

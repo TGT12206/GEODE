@@ -1,13 +1,13 @@
 import { TFile, TFolder } from "obsidian";
 import { Tab } from "./tab";
 import { AppAndProject } from "classes/project";
-import { GEOD3File } from "./file-types/geod3-file";
-import { GEOD3Folder } from "./file-types/geod3-folder";
+import { GEODEFile } from "./file-types/geode-file";
+import { GEODEFolder } from "./file-types/geode-folder";
 import { ImageFile, SoundFile, VideoFile } from "./file-types/real-file";
 
-export class GEOD3FileManager extends Tab {
+export class GEODEFileManager extends Tab {
     static override icon = '📁';
-    files: GEOD3File[];
+    files: GEODEFile[];
     mainDiv: HTMLDivElement;
     fileDiv: HTMLDivElement;
     propertiesDiv: HTMLDivElement;
@@ -72,13 +72,13 @@ export class GEOD3FileManager extends Tab {
         '🎞️Video'
     ]
 
-    private AssignObjectFromFileType(plainObj: any, path: string, parentPath: String): GEOD3File {
+    private AssignObjectFromFileType(plainObj: any, path: string, parentPath: String): GEODEFile {
         plainObj.path = path;
         plainObj.parentPath = parentPath;
         switch(plainObj.type) {
             case '📁Folder':
             default:
-                return Object.assign(new GEOD3Folder(path, parentPath), plainObj);
+                return Object.assign(new GEODEFolder(path, parentPath), plainObj);
             case '🖼️Image':
                 return Object.assign(new ImageFile(path, parentPath), plainObj);
             case '🔊Sound':
@@ -88,11 +88,11 @@ export class GEOD3FileManager extends Tab {
         }
     }
 
-    static CreateFileOfType(path: string, parentPath: String, type: string): GEOD3File {
+    static CreateFileOfType(path: string, parentPath: String, type: string): GEODEFile {
         switch(type) {
             case '📁Folder':
             default:
-                return new GEOD3Folder(path, parentPath);
+                return new GEODEFolder(path, parentPath);
             case '🖼️Image':
                 return new ImageFile(path, parentPath);
             case '🔊Sound':
@@ -113,13 +113,13 @@ export class GEOD3FileManager extends Tab {
             throw new Error('Project folder does not exist');
         }
 
-        const folderStack: [TFolder, GEOD3Folder, number][] = [];
+        const folderStack: [TFolder, GEODEFolder, number][] = [];
         const TFindex = 0;
         const GFindex = 1;
         const CFindex = 2;
 
         const rootPath = new String('/');
-        const root = new GEOD3Folder(rootPath, rootPath);
+        const root = new GEODEFolder(rootPath, rootPath);
         folderStack.push([projectFolder, root, 0]);
         this.files.push(root);
         let depth = 0;
@@ -131,10 +131,10 @@ export class GEOD3FileManager extends Tab {
             const relativePath = currFile.path.replace(project.pathToProject, '');
             if (currFile.name !== 'RESERVED FOLDER DO NOT RENAME') {
                 if (currFile instanceof TFolder) {
-                    const newGEOD3Folder = new GEOD3Folder(relativePath, currFolder[GFindex].path);
-                    this.files.push(newGEOD3Folder);
-                    currFolder[GFindex].files.push(newGEOD3Folder);
-                    folderStack.push([currFile, newGEOD3Folder, 0]);
+                    const newGEODEFolder = new GEODEFolder(relativePath, currFolder[GFindex].path);
+                    this.files.push(newGEODEFolder);
+                    currFolder[GFindex].files.push(newGEODEFolder);
+                    folderStack.push([currFile, newGEODEFolder, 0]);
                     depth++;
                 } else if (currFile instanceof TFile) {
                     if (currFile.extension === 'md') {

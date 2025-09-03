@@ -1,10 +1,10 @@
 import { AppAndProject } from "classes/project";
-import { GEOD3File } from "./geod3-file";
-import { GEOD3FileManager } from "../file-manager";
+import { GEODEFile } from "./geode-file";
 import { normalizePath } from "obsidian";
 
-export abstract class RealFile extends GEOD3File {
+export abstract class RealFile extends GEODEFile {
     protected src: string;
+    protected originalFileName: string;
     override get data(): string {
         return this.src;
     }
@@ -65,7 +65,9 @@ export abstract class RealFile extends GEOD3File {
         fileInput.onchange = async () => {
             const fileArray = fileInput.files;
             if (fileArray !== null) {
-                const arrayBuffer = await fileArray[0].arrayBuffer();
+                const file = fileArray[0];
+                this.originalFileName = file.name;
+                const arrayBuffer = await file.arrayBuffer();
                 const blob = new Blob([arrayBuffer]);
                 this.src = URL.createObjectURL(blob);
                 const pathToMDFile = normalizePath(anp.project.pathToProject + this.path + '.md');

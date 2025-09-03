@@ -1,12 +1,12 @@
 import { AppAndProject } from 'classes/project';
-import { GEOD3FileManager } from '../file-manager';
-import { GEOD3Folder } from './geod3-folder';
+import { GEODEFileManager } from '../file-manager';
+import { GEODEFolder } from './geode-folder';
 import { normalizePath } from 'obsidian';
 
-export abstract class GEOD3File {
+export abstract class GEODEFile {
     parentPath: String;
-    getParent(manager: GEOD3FileManager): GEOD3Folder {
-        return <GEOD3Folder> manager.GetFile(this.parentPath);
+    getParent(manager: GEODEFileManager): GEODEFolder {
+        return <GEODEFolder> manager.GetFile(this.parentPath);
     }
 
     /**

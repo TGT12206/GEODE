@@ -1,13 +1,13 @@
 import { AppAndProject } from "classes/project";
-import { GEOD3FileManager } from "../file-manager";
-import { GEOD3File } from "./geod3-file";
+import { GEODEFileManager } from "../file-manager";
+import { GEODEFile } from "./geode-file";
 
-export class GEOD3Folder extends GEOD3File {
+export class GEODEFolder extends GEODEFile {
     override type = '📁Folder';
-    files: GEOD3File[];
-    selectedThumbnail: [GEOD3File, HTMLDivElement] | undefined;
+    files: GEODEFile[];
+    selectedThumbnail: [GEODEFile, HTMLDivElement] | undefined;
 
-    override get data(): GEOD3File[] {
+    override get data(): GEODEFile[] {
         return this.files;
     }
 
@@ -24,24 +24,24 @@ export class GEOD3Folder extends GEOD3File {
         const project = anp.project;
         const createDiv = manager.fileDiv.createDiv('hbox');
         const typeDropdown = createDiv.createEl('select');
-        for (let i = 0; i < GEOD3FileManager.KNOWN_FILE_TYPES.length; i++) {
-            const currType = GEOD3FileManager.KNOWN_FILE_TYPES[i];
+        for (let i = 0; i < GEODEFileManager.KNOWN_FILE_TYPES.length; i++) {
+            const currType = GEODEFileManager.KNOWN_FILE_TYPES[i];
             typeDropdown.createEl('option', { text: currType, value: currType } );
         }
-        typeDropdown.value = GEOD3FileManager.KNOWN_FILE_TYPES[0];
+        typeDropdown.value = GEODEFileManager.KNOWN_FILE_TYPES[0];
         const nameInput = createDiv.createEl('input', { type: 'text', value: 'Unnamed' } );
         const addButton = createDiv.createEl('button', { text: '+' } );
         addButton.onclick = async () => {
             const newRelPath = this.path + (this.path.valueOf() === '/' ? '' : '/') + nameInput.value;
             const newPath = project.pathToProject + newRelPath;
-            const newGEOD3File = GEOD3FileManager.CreateFileOfType(newRelPath, this.path, typeDropdown.value);
+            const newGEODEFile = GEODEFileManager.CreateFileOfType(newRelPath, this.path, typeDropdown.value);
             if (typeDropdown.value === '📁Folder') {
                 vault.createFolder(newPath);
             } else {
-                vault.create(newPath + '.md', JSON.stringify(newGEOD3File));
+                vault.create(newPath + '.md', JSON.stringify(newGEODEFile));
             }
-            manager.files.push(newGEOD3File);
-            this.files.push(newGEOD3File);
+            manager.files.push(newGEODEFile);
+            this.files.push(newGEODEFile);
             this.Open(anp);
         }
         this.selectedThumbnail = undefined;
@@ -52,7 +52,7 @@ export class GEOD3Folder extends GEOD3File {
         }
     }
 
-    SelectFile(anp: AppAndProject, newSelectedFile: GEOD3File, thumbnailDiv: HTMLDivElement) {
+    SelectFile(anp: AppAndProject, newSelectedFile: GEODEFile, thumbnailDiv: HTMLDivElement) {
         if (this.selectedThumbnail !== undefined && this.selectedThumbnail[0] === newSelectedFile && this.selectedThumbnail[1] === thumbnailDiv) {
             this.selectedThumbnail[0].Open(anp);
         } else {
@@ -83,7 +83,7 @@ export class GEOD3Folder extends GEOD3File {
                 vault.rename(tFile, project.pathToProject + newPath);
             }
             this.path = newPath;
-            const folderStack: [GEOD3Folder, number][] = [];
+            const folderStack: [GEODEFolder, number][] = [];
             const GFindex = 0;
             const CFindex = 1;
             folderStack.push([this, 0]);
@@ -94,7 +94,7 @@ export class GEOD3Folder extends GEOD3File {
                 const currIndex = currFolder[CFindex];
                 const currFile = currFolder[GFindex].files[currIndex];
                 currFile.path = currFile.path.replace(originalPath.valueOf(), newPath);
-                if (currFile instanceof GEOD3Folder) {
+                if (currFile instanceof GEODEFolder) {
                     folderStack.push([currFile, 0]);
                     depth++;
                 } else {
