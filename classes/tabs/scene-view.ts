@@ -18,18 +18,18 @@ export class SceneView extends Tab {
     override Focus(div: HTMLDivElement): void {
         div.empty();
 
-        div.className = 'geod3-tab-container hbox';
+        div.className = 'geode-tab-container hbox';
 
-        this.hierarchyDiv = div.createDiv('geod3-object-list vbox');
-        const sceneScrollWrapper = div.createDiv('geod3-scene-scroll-wrapper');
-        const sceneWrapper = sceneScrollWrapper.createDiv('geod3-scene-wrapper');
-        this.sceneDiv = sceneWrapper.createDiv('geod3-scene');
-        this.inspectorDiv = div.createDiv('geod3-inspector vbox');
+        this.hierarchyDiv = div.createDiv('geode-object-list vbox');
+        const sceneScrollWrapper = div.createDiv('geode-scene-scroll-wrapper');
+        const sceneWrapper = sceneScrollWrapper.createDiv('geode-scene-wrapper');
+        this.sceneDiv = sceneWrapper.createDiv('geode-scene');
+        this.inspectorDiv = div.createDiv('geode-inspector vbox');
 
         const listDiv = this.hierarchyDiv.createDiv('vbox');
 
         for (let i = 0; i < this.objects.length; i++) {
-            const objectDiv = listDiv.createDiv('geod3-object-in-list hbox pointer-hover');
+            const objectDiv = listDiv.createDiv('geode-object-in-list hbox pointer-hover');
             const currObj = this.objects[i];
             objectDiv.textContent = currObj.idInScene + ': ' + currObj.name;
             objectDiv.onclick = () => {
@@ -39,8 +39,8 @@ export class SceneView extends Tab {
         const buttonsDiv = this.hierarchyDiv.createDiv('hbox');
         const refreshButton = buttonsDiv.createEl('button', { text: '⟳' } );
         const addObjButton = buttonsDiv.createEl('button', { text: '+' } );
-        refreshButton.className = 'geod3-secondary-button';
-        addObjButton.className = 'geod3-add-button';
+        refreshButton.className = 'geode-secondary-button';
+        addObjButton.className = 'geode-add-button';
         refreshButton.style.width = '50%';
         addObjButton.style.width = '50%';
         refreshButton.onclick = () => {
@@ -53,7 +53,7 @@ export class SceneView extends Tab {
         addObjButton.onclick = () => {
             const index = this.objects.length;
             const newObj = new GEODEObject(index);
-            const objectDiv = listDiv.createDiv('geod3-object-in-list hbox pointer-hover');
+            const objectDiv = listDiv.createDiv('geode-object-in-list hbox pointer-hover');
             objectDiv.createEl('div', { text: newObj.idInScene + ': ' + newObj.name } );
             this.objects.push(newObj);
             objectDiv.onclick = () => {

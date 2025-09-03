@@ -26,9 +26,9 @@ export class ScriptEditor extends Tab {
             }
         }
 
-        div.className = 'geod3-tab-container hbox';
-        const leftSide = div.createDiv('geod3-script-wrapper vbox');
-        const topDiv = leftSide.createDiv('geod3-script-navigator hbox');
+        div.className = 'geode-tab-container hbox';
+        const leftSide = div.createDiv('geode-script-wrapper vbox');
+        const topDiv = leftSide.createDiv('geode-script-navigator hbox');
 
         const objIDInput = topDiv.createEl('select');
         const clusterTypeInput = topDiv.createEl('select');
@@ -46,10 +46,10 @@ export class ScriptEditor extends Tab {
         
         clusterNumberInput.min = '0';
 
-        this.scriptDiv = leftSide.createDiv('geod3-script');
-        const blockPool = div.createDiv('geod3-block-pool');
-        this.blocksDiv = blockPool.createDiv('geod3-blocks-list vbox');
-        this.delDiv = blockPool.createDiv('geod3-block-delete-div');
+        this.scriptDiv = leftSide.createDiv('geode-script');
+        const blockPool = div.createDiv('geode-block-pool');
+        this.blocksDiv = blockPool.createDiv('geode-blocks-list vbox');
+        this.delDiv = blockPool.createDiv('geode-block-delete-div');
 
         const LoadScript = () => {
             this.scriptDiv.empty();
@@ -96,12 +96,12 @@ export class ScriptEditor extends Tab {
             if (event.dataTransfer !== null) {
                 event.dataTransfer.dropEffect = "copy";
             }
-            this.delDiv.className = 'geod3-block-delete-div-hover';
+            this.delDiv.className = 'geode-block-delete-div-hover';
         });
 
         this.delDiv.addEventListener("dragleave", (event: DragEvent) => {
             event.stopPropagation();
-            this.delDiv.className = 'geod3-block-delete-div';
+            this.delDiv.className = 'geode-block-delete-div';
         });
 
         this.delDiv.addEventListener('drop', (event: DragEvent) => {

@@ -15,9 +15,9 @@ export class GameView extends Tab {
 
     override async Focus(div: HTMLDivElement): Promise<void> {
         div.empty();
-        div.className = 'geod3-game-view-main-div geod3-tab-container';
-        const gameWrapper = div.createDiv('geod3-game-wrapper');
-        this.gameDiv = gameWrapper.createDiv('geod3-game');
+        div.className = 'geode-game-view-main-div geode-tab-container';
+        const gameWrapper = div.createDiv('geode-game-wrapper');
+        this.gameDiv = gameWrapper.createDiv('geode-game');
         this.stillRunning = true;
         this.objects = [];
         this.pressedKeys = new Map();

@@ -130,8 +130,8 @@ export class Project {
     async Display(div: HTMLDivElement) {
         div.empty();
 
-        const tabBar = div.createDiv('geod3-tab-bar hbox');
-        const tabContainer = div.createDiv('geod3-tab-container');
+        const tabBar = div.createDiv('geode-tab-bar hbox');
+        const tabContainer = div.createDiv('geode-tab-container');
 
         const tabIcons: HTMLElement[] = [];
 
@@ -140,7 +140,7 @@ export class Project {
         const scriptEditorTab = tabBar.createEl('button', { text: ScriptEditor.icon } );
         const gameTab = tabBar.createEl('button', { text: GameView.icon } );
         const saveButton = tabBar.createEl('button', { text: '💾Save' } );
-        saveButton.className = 'geod3-secondary-button';
+        saveButton.className = 'geode-secondary-button';
         saveButton.onclick = async () => {
             saveButton.disabled = true;
             saveButton.textContent = '⟳Saving...';
@@ -151,24 +151,24 @@ export class Project {
             saveButton.textContent = '💾Save';
         }
 
-        filesTab.className = 'geod3-tab-icon';
-        sceneViewTab.className = 'geod3-tab-icon';
-        scriptEditorTab.className = 'geod3-tab-icon';
-        gameTab.className = 'geod3-tab-icon';
+        filesTab.className = 'geode-tab-icon';
+        sceneViewTab.className = 'geode-tab-icon';
+        scriptEditorTab.className = 'geode-tab-icon';
+        gameTab.className = 'geode-tab-icon';
 
         tabIcons.push(filesTab);
         tabIcons.push(sceneViewTab);
         tabIcons.push(scriptEditorTab);
         tabIcons.push(gameTab);
 
-        tabIcons[this.activeTabID].className = 'geod3-tab-icon-opened';
+        tabIcons[this.activeTabID].className = 'geode-tab-icon-opened';
         this.tabs[this.activeTabID].Focus(tabContainer);
 
         const switchToTab = async (index: number) => {
-            tabIcons[this.activeTabID].className = 'geod3-tab-icon';
+            tabIcons[this.activeTabID].className = 'geode-tab-icon';
             await this.tabs[this.activeTabID].UnFocus(tabContainer);
             this.activeTabID = index;
-            tabIcons[this.activeTabID].className = 'geod3-tab-icon-opened';
+            tabIcons[this.activeTabID].className = 'geode-tab-icon-opened';
             this.tabs[this.activeTabID].Focus(tabContainer);
         }
 

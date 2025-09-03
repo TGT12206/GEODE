@@ -11,10 +11,10 @@ export class AmethystBooleanEditor extends AmethystStructEditor {
         this.instance = instance;
         const input = div.createEl('input', { type: 'checkbox' } );
         input.checked = this.instance.value;
-        input.className = input.checked ? 'geode-boolean-checked' : 'geode-boolean-unchecked';
+        input.className = 'geode-value-input geode-boolean-input ' + (input.checked ? 'geode-checked' : 'geode-unchecked');
         input.onclick = () => {
             this.instance.value = input.checked;
-            input.className = input.checked ? 'geode-boolean-checked' : 'geode-boolean-unchecked';
+            input.className = 'geode-value-input geode-boolean-input ' + (input.checked ? 'geode-checked' : 'geode-unchecked');
         }
     }
 }

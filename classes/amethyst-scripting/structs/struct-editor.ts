@@ -20,9 +20,9 @@ export abstract class AmethystStructEditor {
          * I hope it will be obvious why this is necessary.
          */
         const tempEl = div.createEl('div', { text: input.value } );
-        tempEl.className = 'geode-temporary-width-checker';
+        tempEl.className = 'geode-temporary-input-width-checker';
         tempEl.style.font = input.style.font;
-        tempEl.style.padding = input.style.padding;
+        tempEl.style.fontSize = input.style.fontSize;
 
         input.style.width = tempEl.getBoundingClientRect().width + 'px';
         

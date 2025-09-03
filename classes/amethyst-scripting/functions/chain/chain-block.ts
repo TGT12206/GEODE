@@ -10,12 +10,6 @@ export class ChainBlock extends AmethystBlock {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-chain-block';
-        // div.style.backgroundColor = BG_COLOR_2;
-        // div.style.borderStyle = 'solid';
-        // div.style.borderColor = ACCENT_COLOR_3;
-        // div.style.width = 'fit-content';
-        // div.style.padding = '1vh';
-        // div.style.gap = '1vh';
 
         for (let i = 0; i < this.instance.parameters.length; i++) {
             const index = i;
@@ -36,7 +30,6 @@ export class ChainBlock extends AmethystBlock {
                 this.DisplayBlock();
             }
 
-            // BG_COLOR_3
             this.CreateFunctParameterDiv(index, currBlockDiv.createDiv());
         }
         const addButton = div.createEl('button', { text: '+' } );

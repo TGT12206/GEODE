@@ -11,9 +11,6 @@ export class SetVariableBlock extends AmethystBlock {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-set-variable-block';
-        // div.style.backgroundColor = CENTRAL_COLOR_2;
-        // div.style.borderStyle = 'solid';
-        // div.style.borderColor = ACCENT_COLOR_3;
         const anp = this.anp;
 
         const varName = <AmethystStruct> this.instance.parameters[0];
@@ -29,41 +26,64 @@ export class SetVariableBlock extends AmethystBlock {
         const objIDInput = objDiv.createEl('select');
         const varNameInput = varDiv.createEl('select');
 
-        // objIDInput.style.backgroundColor = CENTRAL_COLOR_3;
-        // varNameInput.style.backgroundColor = CENTRAL_COLOR_3;
-
-        objIDInput.style.paddingRight = '0';
-        varNameInput.style.paddingRight = '0';
-
         const objArr = anp.project.sceneView.objects;
         for (let i = 0; i < objArr.length; i++) {
             objIDInput.createEl('option', { text: i + ': ' + objArr[i].name, value: i + ': ' + objArr[i].name } );
         }
 
+        const CreateOrCheckValueInput = () => {
+            valueDiv.empty();
+
+            const objArr = anp.project.sceneView.objects;
+            const objID = (<AmethystStruct> this.instance.parameters[1]).value;
+            const currObj = objArr[objID];
+            const variable = GEODEObjectHandler.GetVariable(currObj, varNameInput.value);
+
+            if (this.instance.parameters.length === 2) {
+                const defaultVal = AmethystStructHandler.Create(variable.type);
+                this.instance.parameters.push(defaultVal);
+                this.CreateValParameterDiv(2, valueDiv);
+                return;
+            }
+            
+            const currValParam = this.instance.parameters[2];
+            if (currValParam instanceof AmethystFunction) {
+                this.CreateFunctParameterDiv(2, valueDiv);
+                return;
+            }
+            if (variable.type === currValParam.type) {
+                return;
+            }
+
+            const defaultVal = AmethystStructHandler.Create(variable.type);
+            this.instance.parameters[2] = defaultVal;
+            this.CreateValParameterDiv(2, valueDiv);
+        }
+
         const GetAllVarNames = () => {
             varNameInput.empty();
+
             const objArr = anp.project.sceneView.objects;
-            const varArr = objArr[(<AmethystStruct> this.instance.parameters[1]).value].variables;
+            const objID = (<AmethystStruct> this.instance.parameters[1]).value;
+            const currObj = objArr[objID];
+            const varArr = currObj.variables;
+
             for (let i = 0; i < varArr.length; i++) {
                 varNameInput.createEl('option', { text: varArr[i].name, value: varArr[i].name } );
             }
 
-            valueDiv.empty();
-            if (this.instance.parameters[2] instanceof AmethystFunction) {
-                this.CreateFunctParameterDiv(2, valueDiv); // CENTRAL_COLOR_3
-            } else {
-                this.CreateValParameterDiv(2, valueDiv); // CENTRAL_COLOR_3
-            }
+            CreateOrCheckValueInput();
         }
         
         objIDInput.onchange = () => {
             (<AmethystStruct> this.instance.parameters[1]).value = parseInt(objIDInput.value.split(':')[0]);
-            AmethystBlock.AdjustInputWidth(objIDInput, div);
+            AmethystBlock.AdjustDropdownWidth(objIDInput, div);
             GetAllVarNames();
         }
         varNameInput.onchange = () => {
             (<AmethystStruct> this.instance.parameters[0]).value = varNameInput.value;
-            AmethystBlock.AdjustInputWidth(varNameInput, div);
+            AmethystBlock.AdjustDropdownWidth(varNameInput, div);
+            CreateOrCheckValueInput();
         }
 
         GetAllVarNames();
@@ -71,8 +91,8 @@ export class SetVariableBlock extends AmethystBlock {
         objIDInput.value = objID.value + ': ' + objArr[objID.value].name;
         varNameInput.value = varName.value;
 
-        AmethystBlock.AdjustInputWidth(objIDInput, div);
-        AmethystBlock.AdjustInputWidth(varNameInput, div);
+        AmethystBlock.AdjustDropdownWidth(objIDInput, div);
+        AmethystBlock.AdjustDropdownWidth(varNameInput, div);
     }
     override RemoveParameter(parameter: AmethystFunction): void {
         if (this.instance.parameters[2] === parameter) {

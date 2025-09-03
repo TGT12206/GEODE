@@ -20,13 +20,9 @@ export abstract class AmethystBlock {
         this.div.empty();
         this.div.className = 'geode-script-block';
     }
-    static AdjustInputWidth(input: HTMLInputElement | HTMLSelectElement, div: HTMLDivElement) {
+    static AdjustDropdownWidth(input: HTMLInputElement | HTMLSelectElement, div: HTMLDivElement) {
         const tempEl = div.createEl('div', { text: input.value } );
-        tempEl.style.position = 'absolute';
-        tempEl.style.visibility = 'hidden';
-        tempEl.style.whiteSpace = 'nowrap';
-        tempEl.style.font = 'inherit';
-        tempEl.style.padding = '1vh';
+        tempEl.className = 'geode-temporary-select-width-checker';
         input.style.width = tempEl.getBoundingClientRect().width + 'px';
         tempEl.remove();
     }

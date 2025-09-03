@@ -164,11 +164,9 @@ export class GEODEFileManager extends Tab {
     override async Focus(div: HTMLDivElement): Promise<void> {
         div.empty();
         this.mainDiv = div;
-        this.mainDiv.className = 'geod3-tab-container hbox';
-        this.fileDiv = div.createDiv('vbox');
-        this.propertiesDiv = div.createDiv('geod3-file-properties vbox');
-        this.fileDiv.style.width = '70%';
-        this.propertiesDiv.style.width = '30%';
+        this.mainDiv.className = 'geode-tab-container hbox';
+        this.fileDiv = div.createDiv('geode-file-manager-files vbox');
+        this.propertiesDiv = div.createDiv('geode-file-properties vbox');
         this.files[0].Open(this.anp);
     }
 

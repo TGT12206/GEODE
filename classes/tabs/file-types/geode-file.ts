@@ -40,7 +40,7 @@ export abstract class GEODEFile {
     async Open(anp: AppAndProject): Promise<void> {
         const manager = anp.project.fileManager;
         manager.fileDiv.empty();
-        manager.fileDiv.className = 'vbox';
+        manager.fileDiv.className = 'geode-file-manager-files vbox';
 
         const backButton = manager.fileDiv.createEl('button', { text: 'Go back to ' + this.getParent(manager).name } );
 

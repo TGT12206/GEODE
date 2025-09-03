@@ -10,7 +10,7 @@ export class AmethystStringEditor extends AmethystStructEditor {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'text', value: this.instance.value + '' } );
-        input.className = 'geode-text-input';
+        input.className = 'geode-value-input geode-text-input';
         AmethystStructEditor.AdjustInputWidth(input, div);
         input.oninput = () => {
             AmethystStructEditor.AdjustInputWidth(input, div);

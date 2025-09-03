@@ -8,12 +8,9 @@ export class KeyDownBlock extends AmethystBlock {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-key-down-block';
-        // div.style.backgroundColor = CENTRAL_COLOR_1;
-        // div.style.borderStyle = 'solid';
-        // div.style.borderColor = ACCENT_COLOR_3;
 
         const keySelect = div.createEl('select');
-        div.createEl('div', { text: 'Key Down?' } );
+        div.createEl('div', { text: 'key down?' } );
 
         for (let i = 0; i < KeyDown.keylist.length; i++) {
             const currKey = KeyDown.keylist[i];
@@ -21,14 +18,11 @@ export class KeyDownBlock extends AmethystBlock {
         }
 
         keySelect.value = (<AmethystStruct> this.instance.parameters[0]).value;
-        AmethystBlock.AdjustInputWidth(keySelect, div);
+        AmethystBlock.AdjustDropdownWidth(keySelect, div);
 
         keySelect.onchange = () => {
             (<AmethystStruct> this.instance.parameters[0]).value = keySelect.value;
-            AmethystBlock.AdjustInputWidth(keySelect, div);
+            AmethystBlock.AdjustDropdownWidth(keySelect, div);
         }
-
-        // keySelect.style.backgroundColor = CENTRAL_COLOR_3;
-        // keySelect.style.paddingRight = '0';
     }
 }

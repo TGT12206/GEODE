@@ -72,15 +72,15 @@ export class AmethystFunctionHandler {
                 return new DoNothing();
             case 'chain':
                 return new Chain(<AmethystFunction[]> newParams);
-            case 'get':
+            case 'get variable':
                 return new GetVariable(<AmethystStruct[]> newParams);
-            case 'set':
+            case 'set variable':
                 return new SetVariable(newParams);
             case 'if':
                 return new If(newParams);
             case 'if else':
                 return new IfElse(newParams);
-            case 'compare':
+            case 'compare values':
                 return new CompareValues(newParams);
             case 'key down':
                 return new KeyDown(newParams);

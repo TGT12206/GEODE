@@ -10,11 +10,11 @@ export abstract class AmethystFunction {
     static knownTypes = [
         'none',
         'chain',
-        'get',
-        'set',
+        'get variable',
+        'set variable',
         'if',
         'if else',
-        'compare',
+        'compare values',
         'key down',
         'number operator'
     ];
