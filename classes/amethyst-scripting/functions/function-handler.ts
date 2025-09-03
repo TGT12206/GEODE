@@ -9,9 +9,9 @@ import { Chain } from "./chain/chain";
 import { ChainBlock } from "./chain/chain-block";
 import { RuntimeChain } from "./chain/runtime-chain";
 import { AmethystRuntimeFunction } from "./runtime-function";
-import { CompareValues } from "./compare-values/compare-values";
-import { CompareValuesBlock } from "./compare-values/compare-values-block";
-import { RuntimeCompareValues } from "./compare-values/runtime-compare-values";
+import { CompareNumbers } from "./compare-values/compare-numbers";
+import { CompareNumbersBlock } from "./compare-values/compare-numbers-block";
+import { RuntimeCompareNumbers } from "./compare-values/runtime-compare-numbers";
 import { GetVariable } from "./get-variable/get-variable";
 import { GetVariableBlock } from "./get-variable/get-variable-block";
 import { RuntimeGetVariable } from "./get-variable/runtime-get-variable";
@@ -24,16 +24,16 @@ import { RuntimeIfElse } from "./if-else/runtime-if-else";
 import { KeyDownBlock } from "./key-down/key-down-block";
 import { RuntimeKeyDown } from "./key-down/runtime-key-down";
 import { KeyDown } from "./key-down/key-down";
-import { NumberOperator } from "./number-operator/number-operator";
 import { SetVariable } from "./set-variable/set-variable";
 import { SetVariableBlock } from "./set-variable/set-variable-block";
-import { NumberOperatorBlock } from "./number-operator/number-operator-block";
 import { RuntimeSetVariable } from "./set-variable/runtime-set-variable";
-import { RuntimeNumberOperator } from "./number-operator/runtime-number-operator";
 import { AmethystBlock } from "./block";
-import { BooleanOperator } from "./boolean-operator/boolean-operator";
-import { BooleanOperatorBlock } from "./boolean-operator/boolean-operator-block";
-import { RuntimeBooleanOperator } from "./boolean-operator/runtime-boolean-operator";
+import { BooleanBinaryOperator } from "./binary-operators/boolean/instance";
+import { NumberBinaryOperator } from "./binary-operators/number/instance";
+import { BooleanBinaryOperatorBlock } from "./binary-operators/boolean/block";
+import { NumberBinaryOperatorBlock } from "./binary-operators/number/block";
+import { RuntimeBooleanBinaryOperator } from "./binary-operators/boolean/runtime";
+import { RuntimeNumberBinaryOperator } from "./binary-operators/number/runtime";
 
 export class AmethystFunctionHandler {
     static Create(type: string, parameters: (AmethystStruct | AmethystFunction)[] | undefined = undefined): AmethystFunction {
@@ -53,12 +53,12 @@ export class AmethystFunctionHandler {
                 return new IfElse(parameters);
             case 'key down':
                 return new KeyDown(parameters);
-            case 'compare values':
-                return new CompareValues(parameters);
-            case 'boolean operator':
-                return new BooleanOperator(parameters);
-            case 'number operator':
-                return new NumberOperator(parameters);
+            case 'compare numbers':
+                return new CompareNumbers(parameters);
+            case 'boolean binary operator':
+                return new BooleanBinaryOperator(parameters);
+            case 'number binary operator':
+                return new NumberBinaryOperator(parameters);
         }
     }
     static Copy(obj: AmethystFunction): AmethystFunction {
@@ -87,12 +87,12 @@ export class AmethystFunctionHandler {
                 return new IfElse(newParams);
             case 'key down':
                 return new KeyDown(newParams);
-            case 'compare values':
-                return new CompareValues(newParams);
-            case 'boolean operator':
-                return new BooleanOperator(newParams);
-            case 'number operator':
-                return new NumberOperator(newParams);
+            case 'compare numbers':
+                return new CompareNumbers(newParams);
+            case 'boolean binary operator':
+                return new BooleanBinaryOperator(newParams);
+            case 'number binary operator':
+                return new NumberBinaryOperator(newParams);
         }
     }
     static CreateBlock(obj: AmethystFunction, blockDiv: HTMLDivElement, anp: AppAndProject): AmethystBlock {
@@ -112,12 +112,12 @@ export class AmethystFunctionHandler {
                 return new IfElseBlock(obj, blockDiv, anp);
             case 'key down':
                 return new KeyDownBlock(obj, blockDiv, anp);
-            case 'compare values':
-                return new CompareValuesBlock(obj, blockDiv, anp);
-            case 'boolean operator':
-                return new BooleanOperatorBlock(obj, blockDiv, anp);
-            case 'number operator':
-                return new NumberOperatorBlock(obj, blockDiv, anp);
+            case 'compare numbers':
+                return new CompareNumbersBlock(obj, blockDiv, anp);
+            case 'boolean binary operator':
+                return new BooleanBinaryOperatorBlock(obj, blockDiv, anp);
+            case 'number binary operator':
+                return new NumberBinaryOperatorBlock(obj, blockDiv, anp);
         }
     }
     static CreateRuntimeInstance(obj: AmethystFunction, anp: AppAndProject): AmethystRuntimeFunction {
@@ -137,12 +137,12 @@ export class AmethystFunctionHandler {
                 return new RuntimeIfElse(obj, anp);
             case 'key down':
                 return new RuntimeKeyDown(obj, anp);
-            case 'compare values':
-                return new RuntimeCompareValues(obj, anp);
-            case 'boolean operator':
-                return new RuntimeBooleanOperator(obj, anp);
-            case 'number operator':
-                return new RuntimeNumberOperator(obj, anp);
+            case 'compare numbers':
+                return new RuntimeCompareNumbers(obj, anp);
+            case 'boolean binary operator':
+                return new RuntimeBooleanBinaryOperator(obj, anp);
+            case 'number binary operator':
+                return new RuntimeNumberBinaryOperator(obj, anp);
         }
     }
 }

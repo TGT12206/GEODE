@@ -2,8 +2,8 @@ import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { AmethystFunction } from "../function";
 
-export class CompareValues extends AmethystFunction {
-    type = 'compare values';
+export class CompareNumbers extends AmethystFunction {
+    type = 'compare numbers';
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const val1 = AmethystStructHandler.Create('number', 0, 'val1');

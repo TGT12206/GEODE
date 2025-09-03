@@ -1,9 +1,9 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
-import { AmethystFunction } from "../function";
+import { AmethystFunction } from "../../function";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 
-export class NumberOperator extends AmethystFunction {
-    type = 'number operator';
+export class NumberBinaryOperator extends AmethystFunction {
+    type = 'number binary operator';
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const num1 = AmethystStructHandler.Create('number', 0, 'num1');

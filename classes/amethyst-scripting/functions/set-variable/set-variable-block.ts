@@ -10,7 +10,7 @@ export class SetVariableBlock extends AmethystBlock {
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-set-variable-block';
+        div.className = 'geode-script-block geode-set-variable-block hbox';
         const anp = this.anp;
 
         const varName = <AmethystStruct> this.instance.parameters[0];
@@ -37,7 +37,7 @@ export class SetVariableBlock extends AmethystBlock {
             const objArr = anp.project.sceneView.objects;
             const objID = (<AmethystStruct> this.instance.parameters[1]).value;
             const currObj = objArr[objID];
-            const variable = GEODEObjectHandler.GetVariable(currObj, varNameInput.value);
+            const variable = GEODEObjectHandler.GetVariable(currObj, (<AmethystStruct> this.instance.parameters[0]).value);
 
             if (this.instance.parameters.length === 2) {
                 const defaultVal = AmethystStructHandler.Create(variable.type);
@@ -52,6 +52,7 @@ export class SetVariableBlock extends AmethystBlock {
                 return;
             }
             if (variable.type === currValParam.type) {
+                this.CreateValParameterDiv(2, valueDiv);
                 return;
             }
 
@@ -72,7 +73,8 @@ export class SetVariableBlock extends AmethystBlock {
                 varNameInput.createEl('option', { text: varArr[i].name, value: varArr[i].name } );
             }
 
-            CreateOrCheckValueInput();
+            // In case a variable name is selected that doesn't exist on the newly selected object
+            try { CreateOrCheckValueInput(); } catch { }
         }
         
         objIDInput.onchange = () => {

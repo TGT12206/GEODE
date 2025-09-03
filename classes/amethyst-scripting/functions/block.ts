@@ -87,13 +87,12 @@ export abstract class AmethystBlock {
             if (event.dataTransfer !== null) {
                 event.dataTransfer.dropEffect = "copy";
             }
-            paramDiv.style.borderStyle = 'solid';
-            // paramDiv.style.borderColor = ACCENT_COLOR_1;
+            paramDiv.classList.add('geode-block-slot-hover');
         });
 
         paramDiv.addEventListener('dragleave', (event: DragEvent) => {
             event.stopPropagation();
-            paramDiv.style.borderStyle = '';
+            paramDiv.classList.remove('geode-block-slot-hover');
         });
 
         paramDiv.addEventListener('drop', (event: DragEvent) => {

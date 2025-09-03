@@ -3,7 +3,6 @@ import { AmethystStruct } from "../structs/struct";
 import { AmethystFunction } from "./function";
 import { AmethystStructHandler } from "../structs/struct-handler";
 import { AmethystFunctionHandler } from "./function-handler";
-import { GEOD3ObjectHandler, GEODERuntimeObject } from "classes/geode-objects/geode-object";
 
 /**
  * A class that actually implements the functionality of the corresponding

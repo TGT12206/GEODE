@@ -7,7 +7,7 @@ export class KeyDownBlock extends AmethystBlock {
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-key-down-block';
+        div.className = 'geode-script-block geode-key-down-block hbox';
 
         const keySelect = div.createEl('select');
         div.createEl('div', { text: 'key down?' } );

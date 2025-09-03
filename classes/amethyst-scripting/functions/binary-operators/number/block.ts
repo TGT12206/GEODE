@@ -1,13 +1,13 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
-import { AmethystBlock } from "../block";
-import { NumberOperator } from "./number-operator";
+import { AmethystBlock } from "../../block";
+import { NumberBinaryOperator } from "./instance";
 
-export class NumberOperatorBlock extends AmethystBlock {
-    instance: NumberOperator;
+export class NumberBinaryOperatorBlock extends AmethystBlock {
+    instance: NumberBinaryOperator;
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-number-operator-block';
+        div.className = 'geode-script-block geode-binary-operator-block hbox';
         
         const num1Div = div.createDiv();
         const operatorSelect = div.createEl('select');

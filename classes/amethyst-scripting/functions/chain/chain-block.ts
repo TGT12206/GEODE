@@ -9,11 +9,11 @@ export class ChainBlock extends AmethystBlock {
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-chain-block';
+        div.className = 'geode-script-block geode-chain-block vbox';
 
         for (let i = 0; i < this.instance.parameters.length; i++) {
             const index = i;
-            const currBlockDiv = div.createDiv('geode-script-block-inner-section hbox');
+            const currBlockDiv = div.createDiv('geode-block-inner-section hbox');
             
             const deleteButton = currBlockDiv.createEl('button', { text: '-' } );
             const addButton = currBlockDiv.createEl('button', { text: '+' } );
@@ -33,7 +33,7 @@ export class ChainBlock extends AmethystBlock {
             this.CreateFunctParameterDiv(index, currBlockDiv.createDiv());
         }
         const addButton = div.createEl('button', { text: '+' } );
-        addButton.className = 'geode-add-button';
+        addButton.className = 'geode-add-button geode-chain-final-add-slot';
 
         addButton.onclick = () => {
             this.instance.parameters.splice(this.instance.parameters.length, 0, new DoNothing());

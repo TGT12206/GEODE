@@ -6,7 +6,7 @@ export class GetVariableBlock extends AmethystBlock {
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-get-variable-block';
+        div.className = 'geode-script-block geode-get-variable-block hbox';
         const anp = this.anp;
 
         const varName = this.instance.parameters[0];

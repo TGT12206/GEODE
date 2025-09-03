@@ -3,7 +3,7 @@ import { AmethystRuntimeFunction } from "../runtime-function";
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 
-export class RuntimeCompareValues extends AmethystRuntimeFunction {
+export class RuntimeCompareNumbers extends AmethystRuntimeFunction {
     async Execute(): Promise<AmethystBoolean> {
         const param1 = this.parameters[0];
         const param2 = <AmethystStruct> this.parameters[1];

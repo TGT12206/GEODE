@@ -11,6 +11,7 @@
 	--geode-remove-color: rgb(198, 68, 68);
 	--geode-remove-color-hover: rgb(138, 0, 0);
 	--geode-dropdown-padding: 0.5vh 1vh 0.5vh 1vh;
+	--geode-block-slot-hover: rgb(223, 236, 255);
 }
 
 /*#region Essential Layout*/
@@ -234,12 +235,12 @@
 .geode-script-wrapper {
 	width: 70%;
 	height: 100%;
-	overflow: scroll;
 	background-color: var(--geode-bg-color-1);
 }
 .geode-script {
-	width: fit-content;
-	height: fit-content;
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
 	background-color: var(--geode-bg-color-1);
 }
 .geode-script-navigator {
@@ -248,6 +249,7 @@
 	border-color: var(--geode-accent-color-3);
 	padding: 0.5vw;
 	gap: 0.5vw;
+	width: 100%;
 }
 .geode-block-pool {
 	width: 30%;
@@ -263,7 +265,7 @@
 	border-left-style: solid;
 	border-color: var(--geode-accent-color-3);
 }
-.geode-script-block-inner-section {
+.geode-block-inner-section {
 	gap: 0.5vh;
 }
 .geode-script-block:hover {
@@ -288,29 +290,33 @@
 	min-width: 4vh;
 	gap: 0.5vh;
 }
-
+.geode-script-block :is(.geode-do-nothing-block.geode-block-slot-hover, .geode-block-slot-hover) {
+	border-style: solid;
+	border-width: 0.5vh;
+	border-radius: 1vh;
+	border-color: var(--geode-block-slot-hover);
+}
 /*#region Chain*/
 .geode-chain-block {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-bg-color-2);
+	gap: 0.5vh;
 }
-.geode-chain-block .geode-do-nothing-block {
+.geode-chain-block > .geode-block-inner-section > .geode-do-nothing-block {
 	border-color: var(--geode-bg-color-1);
 	background-color: var(--geode-bg-color-3);
 }
-.geode-chain-block .geode-add-button {
+.geode-chain-final-add-slot {
 	width: 100%;
 }
 /*#endregion Chain*/
 
 /*#region Get Variable*/
 .geode-get-variable-block {
-	display: flex;
-	flex-direction: row;
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-central-color-2);
 }
-.geode-get-variable-block select {
+.geode-get-variable-block > div > select {
 	padding-right: 0;
 	background-color: var(--geode-central-color-3);
 }
@@ -318,53 +324,44 @@
 
 /*#region Set Variable*/
 .geode-set-variable-block {
-	display: flex;
-	flex-direction: row;
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-central-color-2);
 }
-.geode-set-variable-block :is(select, .geode-value-input) {
+.geode-set-variable-block > div > :is(select, .geode-value-input) {
 	background-color: var(--geode-central-color-3);
 }
-.geode-set-variable-block .geode-boolean-input.geode-unchecked {
+.geode-set-variable-block > .geode-boolean-input.geode-unchecked {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-3);
 }
-.geode-set-variable-block .geode-boolean-input.geode-checked {
+.geode-set-variable-block > .geode-boolean-input.geode-checked {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-1);
 }
-.geode-set-variable-block .geode-boolean-input.geode-checked:hover {
+.geode-set-variable-block > .geode-boolean-input.geode-checked:hover {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-2);
 }
 /*#endregion Set Variable*/
 
 /*#region If/If Else*/
-:is(.geode-if-block, .geode-if-else-block) {
-	display: flex;
-	flex-direction: column;
+.geode-if-block {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-2);
 }
-.geode-if-block-condition {
-	display: flex;
-	flex-direction: row;
-	gap: 0.5vh;
-}
-.geode-if-block-condition .geode-boolean-input.geode-unchecked {
+.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-unchecked {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-3);
 }
-.geode-if-block-condition .geode-boolean-input.geode-checked {
+.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-checked {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-1);
 }
-.geode-if-block-condition .geode-boolean-input.geode-checked:hover {
+.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-checked:hover {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-2);
 }
-:is(.geode-if-block, .geode-if-else-block) .geode-do-nothing-block {
+:is(.geode-if-block, .geode-if-else-block) > .geode-do-nothing-block {
 	border-color: var(--geode-accent-color-1);
 	background-color: var(--geode-accent-color-3);
 }
@@ -372,48 +369,30 @@
 
 /*#region Key Down*/
 .geode-key-down-block {
-	display: flex;
-	flex-direction: row;
 	border-color: var(--geode-accent-color-3);
-	background-color: var(--geode-central-color-1);
+	background-color: var(--geode-central-color-2);
 }
-.geode-key-down-block :is(select, .geode-value-input) {
+.geode-key-down-block > select {
 	background-color: var(--geode-central-color-3);
 }
 /*#endregion Key Down*/
 
 /*#region Compare Values*/
 .geode-compare-values-block {
-	display: flex;
-	flex-direction: row;
 	border-color: var(--geode-accent-color-3);
-	background-color: var(--geode-central-color-1);
+	background-color: var(--geode-central-color-2);
 }
-.geode-compare-values-block :is(select, .geode-value-input) {
+:is(.geode-compare-values-block > select, .geode-compare-values-block > div > .geode-value-input) {
 	background-color: var(--geode-central-color-3);
 }
 /*#endregion Compare Values*/
 
-/*#region Number Operator*/
-.geode-number-operator-block {
-	display: flex;
-	flex-direction: row;
+/*#region Binary Operators*/
+.geode-binary-operator-block {
 	border-color: var(--geode-accent-color-3);
-	background-color: var(--geode-central-color-1);
+	background-color: var(--geode-central-color-2);
 }
-.geode-number-operator-block :is(select, .geode-value-input) {
-	background-color: var(--geode-central-color-3);
-}
-/*#endregion Number Operator*/
-
-/*#region Number Operator*/
-.geode-boolean-operator-block {
-	display: flex;
-	flex-direction: row;
-	border-color: var(--geode-accent-color-3);
-	background-color: var(--geode-central-color-1);
-}
-.geode-boolean-operator-block :is(select, .geode-value-input) {
+:is(.geode-binary-operator-block > select, .geode-binary-operator-block > div > .geode-value-input) {
 	background-color: var(--geode-central-color-3);
 }
 /*#endregion Number Operator*/

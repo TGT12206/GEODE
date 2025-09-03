@@ -6,9 +6,9 @@ export class IfElseBlock extends AmethystBlock {
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-if-else-block';
+        div.className = 'geode-script-block geode-if-block vbox';
 
-        const topDiv = div.createDiv('geode-if-block-condition');
+        const topDiv = div.createDiv('geode-block-inner-section hbox');
         topDiv.createEl('div', { text: 'If' } );
         const conditionDiv = topDiv.createDiv();
         const function1Div = div.createDiv();

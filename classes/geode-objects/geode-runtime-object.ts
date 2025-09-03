@@ -77,6 +77,12 @@ export class GEODERuntimeObject {
         const yAccel = GEODEObjectHandler.GetVariable(this, 'Acceleration y');
         const zAccel = GEODEObjectHandler.GetVariable(this, 'Acceleration z');
         
+        // console.log('values:\n' + 
+        //     'Acc: ' + xAccel.value + ', ' + yAccel.value + ', ' + zAccel.value + '\n' +
+        //     'Vel: ' + xVel.value + ', ' + yVel.value + ', ' + zVel.value + '\n' +
+        //     'Pos: ' + x.value + ', ' + y.value + ', ' + z.value + '\n'
+        // );
+
         this.objDiv.style.width = width.value + 'px';
         this.objDiv.style.height = height.value + 'px';
 

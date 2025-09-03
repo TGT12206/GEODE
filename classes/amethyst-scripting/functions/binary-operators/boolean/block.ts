@@ -1,13 +1,13 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
-import { AmethystBlock } from "../block";
-import { BooleanOperator } from "./boolean-operator";
+import { BooleanBinaryOperator } from "./instance";
+import { AmethystBlock } from "../../block";
 
-export class BooleanOperatorBlock extends AmethystBlock {
-    instance: BooleanOperator;
+export class BooleanBinaryOperatorBlock extends AmethystBlock {
+    instance: BooleanBinaryOperator;
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-boolean-operator-block';
+        div.className = 'geode-script-block geode-binary-operator-block hbox';
         
         const bool1Div = div.createDiv();
         const operatorSelect = div.createEl('select');

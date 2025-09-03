@@ -1,9 +1,9 @@
 import { AmethystNumber } from "classes/amethyst-scripting/structs/number/number";
-import { AmethystRuntimeFunction } from "../runtime-function";
+import { AmethystRuntimeFunction } from "../../runtime-function";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 
-export class RuntimeNumberOperator extends AmethystRuntimeFunction {
+export class RuntimeNumberBinaryOperator extends AmethystRuntimeFunction {
     async Execute(): Promise<AmethystNumber> {
         const param1 = this.parameters[0];
         const param2 = <AmethystStruct> this.parameters[1];

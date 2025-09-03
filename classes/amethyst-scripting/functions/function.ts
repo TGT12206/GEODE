@@ -15,10 +15,10 @@ export abstract class AmethystFunction {
         'if',
         'if else',
         'key down',
-        'compare values',
-        'boolean operator',
-        'number operator'//,
-        // 'string operator'
+        'compare numbers',
+        'boolean binary operator',
+        'number binary operator'//,
+        // 'string binary operator'
     ];
 
     /**

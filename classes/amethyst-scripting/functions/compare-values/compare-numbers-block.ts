@@ -1,13 +1,13 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystBlock } from "../block";
-import { CompareValues } from "./compare-values";
+import { CompareNumbers } from "./compare-numbers";
 
-export class CompareValuesBlock extends AmethystBlock {
-    instance: CompareValues;
+export class CompareNumbersBlock extends AmethystBlock {
+    instance: CompareNumbers;
     override DisplayBlock(): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-compare-values-block';
+        div.className = 'geode-script-block geode-compare-values-block hbox';
 
         const val1Div = div.createDiv();
         const typeSelect = div.createEl('select');
