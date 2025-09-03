@@ -14,9 +14,11 @@ export abstract class AmethystFunction {
         'set variable',
         'if',
         'if else',
-        'compare values',
         'key down',
-        'number operator'
+        'compare values',
+        'boolean operator',
+        'number operator'//,
+        // 'string operator'
     ];
 
     /**

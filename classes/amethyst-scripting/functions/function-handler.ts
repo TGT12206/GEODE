@@ -31,6 +31,9 @@ import { NumberOperatorBlock } from "./number-operator/number-operator-block";
 import { RuntimeSetVariable } from "./set-variable/runtime-set-variable";
 import { RuntimeNumberOperator } from "./number-operator/runtime-number-operator";
 import { AmethystBlock } from "./block";
+import { BooleanOperator } from "./boolean-operator/boolean-operator";
+import { BooleanOperatorBlock } from "./boolean-operator/boolean-operator-block";
+import { RuntimeBooleanOperator } from "./boolean-operator/runtime-boolean-operator";
 
 export class AmethystFunctionHandler {
     static Create(type: string, parameters: (AmethystStruct | AmethystFunction)[] | undefined = undefined): AmethystFunction {
@@ -48,10 +51,12 @@ export class AmethystFunctionHandler {
                 return new If(parameters);
             case 'if else':
                 return new IfElse(parameters);
-            case 'compare values':
-                return new CompareValues(parameters);
             case 'key down':
                 return new KeyDown(parameters);
+            case 'compare values':
+                return new CompareValues(parameters);
+            case 'boolean operator':
+                return new BooleanOperator(parameters);
             case 'number operator':
                 return new NumberOperator(parameters);
         }
@@ -80,10 +85,12 @@ export class AmethystFunctionHandler {
                 return new If(newParams);
             case 'if else':
                 return new IfElse(newParams);
-            case 'compare values':
-                return new CompareValues(newParams);
             case 'key down':
                 return new KeyDown(newParams);
+            case 'compare values':
+                return new CompareValues(newParams);
+            case 'boolean operator':
+                return new BooleanOperator(newParams);
             case 'number operator':
                 return new NumberOperator(newParams);
         }
@@ -103,10 +110,12 @@ export class AmethystFunctionHandler {
                 return new IfBlock(obj, blockDiv, anp);
             case 'if else':
                 return new IfElseBlock(obj, blockDiv, anp);
-            case 'compare values':
-                return new CompareValuesBlock(obj, blockDiv, anp);
             case 'key down':
                 return new KeyDownBlock(obj, blockDiv, anp);
+            case 'compare values':
+                return new CompareValuesBlock(obj, blockDiv, anp);
+            case 'boolean operator':
+                return new BooleanOperatorBlock(obj, blockDiv, anp);
             case 'number operator':
                 return new NumberOperatorBlock(obj, blockDiv, anp);
         }
@@ -126,10 +135,12 @@ export class AmethystFunctionHandler {
                 return new RuntimeIf(obj, anp);
             case 'if else':
                 return new RuntimeIfElse(obj, anp);
-            case 'compare vaues':
-                return new RuntimeCompareValues(obj, anp);
             case 'key down':
                 return new RuntimeKeyDown(obj, anp);
+            case 'compare values':
+                return new RuntimeCompareValues(obj, anp);
+            case 'boolean operator':
+                return new RuntimeBooleanOperator(obj, anp);
             case 'number operator':
                 return new RuntimeNumberOperator(obj, anp);
         }
