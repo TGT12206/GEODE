@@ -1,8 +1,9 @@
-import { AppAndProject } from "classes/project";
 import { AmethystStruct } from "../structs/struct";
 import { AmethystFunction } from "./function";
 import { AmethystStructHandler } from "../structs/struct-handler";
 import { AmethystFunctionHandler } from "./function-handler";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
 /**
  * A class that actually implements the functionality of the corresponding
@@ -22,17 +23,17 @@ export abstract class AmethystRuntimeFunction {
     /**
      * A reference to the app (for vault access) and the project (for access to game information)
      */
-    anp: AppAndProject;
+    project: Project;
 
     /**
      * Carries out the behavior expected of this function type
      */
-    abstract Execute(): Promise<any>;
+    abstract Execute(view: GEODEView): Promise<any>;
 
-    constructor(ogFunction: AmethystFunction, anp: AppAndProject) {
+    constructor(ogFunction: AmethystFunction, project: Project) {
         this.type = ogFunction.type;
         this.parameters = [];
-        this.anp = anp;
+        this.project = project;
 
         /**
          * Creates a runtime instance (or copy, if value) of all the parameters.
@@ -47,7 +48,7 @@ export abstract class AmethystRuntimeFunction {
                  */
                 copy = AmethystStructHandler.Copy(ogParam);
             } else {
-                copy = AmethystFunctionHandler.CreateRuntimeInstance(ogParam, anp);
+                copy = AmethystFunctionHandler.CreateRuntimeInstance(ogParam, project);
             }
             this.parameters.push(copy);
         }

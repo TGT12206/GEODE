@@ -1,3 +1,4 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystStructEditor } from "../struct-editor";
 import { AmethystBoolean } from "./boolean";
 
@@ -6,15 +7,15 @@ import { AmethystBoolean } from "./boolean";
  */
 export class AmethystBooleanEditor extends AmethystStructEditor {
     instance: AmethystBoolean;
-    constructor(instance: AmethystBoolean, div: HTMLDivElement) {
+    constructor(instance: AmethystBoolean, div: HTMLDivElement, view: GEODEView) {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'checkbox' } );
         input.checked = this.instance.value;
         input.className = 'geode-value-input geode-boolean-input ' + (input.checked ? 'geode-checked' : 'geode-unchecked');
-        input.onclick = () => {
+        view.registerDomEvent(input, 'click', () => {
             this.instance.value = input.checked;
             input.className = 'geode-value-input geode-boolean-input ' + (input.checked ? 'geode-checked' : 'geode-unchecked');
-        }
+        });
     }
 }

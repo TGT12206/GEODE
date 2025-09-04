@@ -1,4 +1,3 @@
-import { AppAndProject } from "classes/project";
 import { AmethystStruct } from "../structs/struct";
 import { AmethystStructHandler } from "../structs/struct-handler";
 import { DoNothing } from "./do-nothing/do-nothing";
@@ -34,6 +33,8 @@ import { BooleanBinaryOperatorBlock } from "./binary-operators/boolean/block";
 import { NumberBinaryOperatorBlock } from "./binary-operators/number/block";
 import { RuntimeBooleanBinaryOperator } from "./binary-operators/boolean/runtime";
 import { RuntimeNumberBinaryOperator } from "./binary-operators/number/runtime";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
 export class AmethystFunctionHandler {
     static Create(type: string, parameters: (AmethystStruct | AmethystFunction)[] | undefined = undefined): AmethystFunction {
@@ -95,54 +96,54 @@ export class AmethystFunctionHandler {
                 return new NumberBinaryOperator(newParams);
         }
     }
-    static CreateBlock(obj: AmethystFunction, blockDiv: HTMLDivElement, anp: AppAndProject): AmethystBlock {
+    static CreateBlock(obj: AmethystFunction, blockDiv: HTMLDivElement, view: GEODEView, project: Project): AmethystBlock {
         switch(obj.type) {
             case 'none':
             default:
-                return new DoNothingBlock(obj, blockDiv, anp);
+                return new DoNothingBlock(obj, blockDiv, view ,project);
             case 'chain':
-                return new ChainBlock(obj, blockDiv, anp);
+                return new ChainBlock(obj, blockDiv, view ,project);
             case 'get variable':
-                return new GetVariableBlock(obj, blockDiv, anp);
+                return new GetVariableBlock(obj, blockDiv, view ,project);
             case 'set variable':
-                return new SetVariableBlock(obj, blockDiv, anp);
+                return new SetVariableBlock(obj, blockDiv, view ,project);
             case 'if':
-                return new IfBlock(obj, blockDiv, anp);
+                return new IfBlock(obj, blockDiv, view ,project);
             case 'if else':
-                return new IfElseBlock(obj, blockDiv, anp);
+                return new IfElseBlock(obj, blockDiv, view ,project);
             case 'key down':
-                return new KeyDownBlock(obj, blockDiv, anp);
+                return new KeyDownBlock(obj, blockDiv, view ,project);
             case 'compare numbers':
-                return new CompareNumbersBlock(obj, blockDiv, anp);
+                return new CompareNumbersBlock(obj, blockDiv, view ,project);
             case 'boolean binary operator':
-                return new BooleanBinaryOperatorBlock(obj, blockDiv, anp);
+                return new BooleanBinaryOperatorBlock(obj, blockDiv, view ,project);
             case 'number binary operator':
-                return new NumberBinaryOperatorBlock(obj, blockDiv, anp);
+                return new NumberBinaryOperatorBlock(obj, blockDiv, view ,project);
         }
     }
-    static CreateRuntimeInstance(obj: AmethystFunction, anp: AppAndProject): AmethystRuntimeFunction {
+    static CreateRuntimeInstance(obj: AmethystFunction, project: Project): AmethystRuntimeFunction {
         switch(obj.type) {
             case 'none':
             default:
-                return new RuntimeDoNothing(obj, anp);
+                return new RuntimeDoNothing(obj, project);
             case 'chain':
-                return new RuntimeChain(obj, anp);
+                return new RuntimeChain(obj, project);
             case 'get variable':
-                return new RuntimeGetVariable(obj, anp);
+                return new RuntimeGetVariable(obj, project);
             case 'set variable':
-                return new RuntimeSetVariable(obj, anp);
+                return new RuntimeSetVariable(obj, project);
             case 'if':
-                return new RuntimeIf(obj, anp);
+                return new RuntimeIf(obj, project);
             case 'if else':
-                return new RuntimeIfElse(obj, anp);
+                return new RuntimeIfElse(obj, project);
             case 'key down':
-                return new RuntimeKeyDown(obj, anp);
+                return new RuntimeKeyDown(obj, project);
             case 'compare numbers':
-                return new RuntimeCompareNumbers(obj, anp);
+                return new RuntimeCompareNumbers(obj, project);
             case 'boolean binary operator':
-                return new RuntimeBooleanBinaryOperator(obj, anp);
+                return new RuntimeBooleanBinaryOperator(obj, project);
             case 'number binary operator':
-                return new RuntimeNumberBinaryOperator(obj, anp);
+                return new RuntimeNumberBinaryOperator(obj, project);
         }
     }
 }

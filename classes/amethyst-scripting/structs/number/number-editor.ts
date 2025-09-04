@@ -1,3 +1,4 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystStructEditor } from "../struct-editor";
 import { AmethystNumber } from "./number";
 
@@ -6,17 +7,18 @@ import { AmethystNumber } from "./number";
  */
 export class AmethystNumberEditor extends AmethystStructEditor {
     instance: AmethystNumber;
-    constructor(instance: AmethystNumber, div: HTMLDivElement) {
+    constructor(instance: AmethystNumber, div: HTMLDivElement, view: GEODEView) {
         super();
         this.instance = instance;
         const input = div.createEl('input', { type: 'text', value: this.instance.value + '' } );
         input.className = 'geode-value-input geode-text-input';
         AmethystStructEditor.AdjustInputWidth(input, div);
-        input.oninput = () => {
+        view.registerDomEvent(input, 'input', () => {
             AmethystStructEditor.AdjustInputWidth(input, div);
-        }
-        input.onchange = () => {
+        });
+        view.registerDomEvent(input, 'change', () => {
             this.instance.value = parseFloat(input.value);
-        }
+            AmethystStructEditor.AdjustInputWidth(input, div);
+        });
     }
 }

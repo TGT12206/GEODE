@@ -1,15 +1,14 @@
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
-import { AppAndProject } from "classes/project";
 import { GEODEObject } from "./geode-object";
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
 export class GEODEObjectEditor {
-    anp: AppAndProject;
     instance: GEODEObject;
     
-    constructor(instance: GEODEObject, anp: AppAndProject, div: HTMLDivElement) {
+    constructor(instance: GEODEObject, view: GEODEView, project: Project, div: HTMLDivElement) {
         this.instance = instance;
-        this.anp = anp;
         div.empty();
         const nameDiv = div.createDiv('geode-inspector-top-bar hbox');
         nameDiv.createEl('div', { text: this.instance.idInScene + ':' } );
@@ -20,15 +19,15 @@ export class GEODEObjectEditor {
             this.instance.name = nameInput.value;
         }
         editScriptsButton.onclick = () => {
-            anp.project.scriptEditor.currentObject = this.instance;
-            anp.project.SwitchToTab(anp.project.scriptEditorTabID);
+            project.scriptEditor.currentObject = this.instance;
+            project.SwitchToTab(project.scriptEditorTabID);
         }
         const variablesDiv = div.createDiv('geode-inspector-variable-list vbox');
         for (let i = 0; i < this.instance.variables.length; i++) {
             const variable = this.instance.variables[i];
             const varDiv = variablesDiv.createDiv('geode-inspector-variable hbox');
             varDiv.createEl('div', { text: variable.name } );
-            AmethystStructHandler.CreateEditor(variable, varDiv.createDiv());
+            AmethystStructHandler.CreateEditor(variable, varDiv.createDiv(), view);
         }
         const addNewDiv = div.createDiv('geode-inspector-new-var hbox');
 
@@ -55,7 +54,7 @@ export class GEODEObjectEditor {
             this.instance.variables.push(newVar);
             const newVarDiv = variablesDiv.createDiv('geode-inspector-variable hbox');
             newVarDiv.createEl('div', { text: newVar.name } );
-            AmethystStructHandler.CreateEditor(newVar, newVarDiv);
+            AmethystStructHandler.CreateEditor(newVar, newVarDiv, view);
         }
     }
 }

@@ -7,7 +7,7 @@ export class RuntimeGetVariable extends AmethystRuntimeFunction {
     async Execute(): Promise<AmethystStruct> {
         const varName = this.parameters[0];
         const objIndex = this.parameters[1];
-        const obj = this.anp.project.gameView.objects[objIndex.value];
+        const obj = this.project.gameView.objects[objIndex.value];
         return GEODEObjectHandler.GetVariable(obj, varName.value);
     }
 }

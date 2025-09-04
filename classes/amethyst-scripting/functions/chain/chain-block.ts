@@ -1,3 +1,4 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystBlock } from "../block";
 import { DoNothing } from "../do-nothing/do-nothing";
 import { AmethystFunction } from "../function";
@@ -6,7 +7,7 @@ import { Chain } from "./chain";
 
 export class ChainBlock extends AmethystBlock {
     instance: Chain;
-    override DisplayBlock(): void {
+    override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-chain-block vbox';
@@ -20,25 +21,25 @@ export class ChainBlock extends AmethystBlock {
 
             deleteButton.className = 'geode-remove-button';
             addButton.className = 'geode-add-button';
-
-            deleteButton.onclick = () => {
+            
+            view.registerDomEvent(deleteButton, 'click', () => {
                 this.instance.parameters.splice(index, 1);
-                this.DisplayBlock();
-            }
-            addButton.onclick = () => {
+                this.DisplayBlock(view);
+            });
+            view.registerDomEvent(addButton, 'click', () => {
                 this.instance.parameters.splice(index, 0, new DoNothing());
-                this.DisplayBlock();
-            }
+                this.DisplayBlock(view);
+            });
 
-            this.CreateFunctParameterDiv(index, currBlockDiv.createDiv());
+            this.CreateFunctParameterDiv(index, currBlockDiv.createDiv(), view);
         }
         const addButton = div.createEl('button', { text: '+' } );
         addButton.className = 'geode-add-button geode-chain-final-add-slot';
 
-        addButton.onclick = () => {
+        view.registerDomEvent(addButton, 'click', () => {
             this.instance.parameters.splice(this.instance.parameters.length, 0, new DoNothing());
-            this.DisplayBlock();
-        }
+            this.DisplayBlock(view);
+        });
     }
     override RemoveParameter(parameter: AmethystFunction): void {
         for (let i = 0; i < this.instance.parameters.length; i++) {

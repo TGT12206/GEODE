@@ -1,6 +1,7 @@
-import { AppAndProject } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 import { GEODEFileManager } from "../file-manager";
 import { GEODEFile } from "./geode-file";
+import { Project } from "classes/project";
 
 export class GEODEFolder extends GEODEFile {
     override type = '📁Folder';
@@ -11,17 +12,16 @@ export class GEODEFolder extends GEODEFile {
         return this.files;
     }
 
-    constructor(path: String, parentPath: String) {
-        super(path, parentPath);
+    constructor(path: String, parentPath: String, project: Project) {
+        super(path, parentPath, project);
         this.files = [];
     }
 
-    override async Open(anp: AppAndProject): Promise<void> {
-        const manager = anp.project.fileManager;
-        super.Open(anp);
+    override async Open(view: GEODEView, project: Project): Promise<void> {
+        const manager = project.fileManager;
+        super.Open(view, project);
 
-        const vault = anp.app.vault;
-        const project = anp.project;
+        const vault = view.app.vault;
         const createDiv = manager.fileDiv.createDiv('hbox');
         const typeDropdown = createDiv.createEl('select');
         for (let i = 0; i < GEODEFileManager.KNOWN_FILE_TYPES.length; i++) {
@@ -34,7 +34,7 @@ export class GEODEFolder extends GEODEFile {
         addButton.onclick = async () => {
             const newRelPath = this.path + (this.path.valueOf() === '/' ? '' : '/') + nameInput.value;
             const newPath = project.pathToProject + newRelPath;
-            const newGEODEFile = GEODEFileManager.CreateFileOfType(newRelPath, this.path, typeDropdown.value);
+            const newGEODEFile = project.fileManager.CreateFileOfType(newRelPath, this.path, typeDropdown.value);
             if (typeDropdown.value === '📁Folder') {
                 vault.createFolder(newPath);
             } else {
@@ -42,45 +42,44 @@ export class GEODEFolder extends GEODEFile {
             }
             manager.files.push(newGEODEFile);
             this.files.push(newGEODEFile);
-            this.Open(anp);
+            this.Open(view, project);
         }
         this.selectedThumbnail = undefined;
 
-        const folderDiv = manager.fileDiv.createDiv('geod3-folder');
+        const folderDiv = manager.fileDiv.createDiv('geode-folder');
         for (let i = 0; i < this.files.length; i++) {
-            this.files[i].DisplayThumbnail(anp, folderDiv.createDiv('geod3-file-thumbnail pointer-hover'));
+            this.files[i].DisplayThumbnail(view, folderDiv.createDiv('geode-file-thumbnail pointer-hover'));
         }
     }
 
-    SelectFile(anp: AppAndProject, newSelectedFile: GEODEFile, thumbnailDiv: HTMLDivElement) {
+    SelectFile(view: GEODEView, newSelectedFile: GEODEFile, thumbnailDiv: HTMLDivElement) {
         if (this.selectedThumbnail !== undefined && this.selectedThumbnail[0] === newSelectedFile && this.selectedThumbnail[1] === thumbnailDiv) {
-            this.selectedThumbnail[0].Open(anp);
+            this.selectedThumbnail[0].Open(view, this.project);
         } else {
             if (this.selectedThumbnail !== undefined) {
-                this.selectedThumbnail[1].className = 'geod3-file-thumbnail pointer-hover';
+                this.selectedThumbnail[1].className = 'geode-file-thumbnail pointer-hover';
             }
             this.selectedThumbnail = [newSelectedFile, thumbnailDiv];
-            this.selectedThumbnail[1].className = 'geod3-file-thumbnail selected pointer-hover';
-            this.selectedThumbnail[0].DisplayProperties(anp, thumbnailDiv);
+            this.selectedThumbnail[1].className = 'geode-file-thumbnail selected pointer-hover';
+            this.selectedThumbnail[0].DisplayProperties(view, thumbnailDiv);
         }
     }
 
-    override async DisplayProperties(anp: AppAndProject, thumbnailDiv: HTMLDivElement) {
-        const manager = anp.project.fileManager;
+    override async DisplayProperties(view: GEODEView, thumbnailDiv: HTMLDivElement) {
+        const manager = this.project.fileManager;
         manager.propertiesDiv.empty();
         const nameInput = manager.propertiesDiv.createEl('input', { type: 'text', value: this.name } );
         manager.propertiesDiv.createEl('div', { text: 'Type: ' + this.type } );
         
-        const vault = anp.app.vault;
-        const project = anp.project;
+        const vault = view.app.vault;
 
         nameInput.onchange = async () => {
             const originalPath = this.path;
-            const tFile = vault.getFolderByPath(project.pathToProject + originalPath);
+            const tFile = vault.getFolderByPath(this.project.pathToProject + originalPath);
             const currName = this.name;
             const newPath = this.path.slice(0, -currName.length) + nameInput.value;
             if (tFile !== null) {
-                vault.rename(tFile, project.pathToProject + newPath);
+                vault.rename(tFile, this.project.pathToProject + newPath);
             }
             this.path = newPath;
             const folderStack: [GEODEFolder, number][] = [];
@@ -110,7 +109,7 @@ export class GEODEFolder extends GEODEFile {
                     }
                 }
             }
-            this.DisplayThumbnail(anp, thumbnailDiv);
+            this.DisplayThumbnail(view, thumbnailDiv);
         }
     }
 }

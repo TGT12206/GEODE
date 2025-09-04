@@ -8,7 +8,7 @@ export class RuntimeKeyDown extends AmethystRuntimeFunction {
         const key = <AmethystStruct> this.parameters[0];
         
         const output = AmethystStructHandler.Create('boolean', false, 'output');
-        const isKeyDown = this.anp.project.gameView.pressedKeys.get(key.value);
+        const isKeyDown = this.project.gameView.pressedKeys.get(key.value);
         output.value = isKeyDown === undefined ? false : isKeyDown;
 
         return output;

@@ -1,6 +1,7 @@
-import { AppAndProject } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 import { GEODEFile } from "./geode-file";
 import { normalizePath } from "obsidian";
+import { Project } from "classes/project";
 
 export abstract class RealFile extends GEODEFile {
     protected src: string;
@@ -9,21 +10,19 @@ export abstract class RealFile extends GEODEFile {
         return this.src;
     }
 
-    constructor(path: String, parentPath: String) {
-        super(path, parentPath);
+    constructor(path: String, parentPath: String, project: Project) {
+        super(path, parentPath, project);
         this.src = '';
     }
-    override async Open(anp: AppAndProject): Promise<void> {
-        const manager = anp.project.fileManager;
-        super.Open(anp);
+    override async Open(view: GEODEView, project: Project): Promise<void> {
+        const manager = project.fileManager;
+        super.Open(view, project);
         this.DisplayActualFile(manager.fileDiv);
     }
-    override async GrabDependencies(anp: AppAndProject): Promise<void> {
+    override async GrabDependencies(view: GEODEView): Promise<void> {
         try {
-            const app = anp.app;
-            const vault = app.vault;
-            const project = anp.project;
-            const pathToActualFile = project.pathToProject + this.path + '.actual-file';
+            const vault = view.app.vault;
+            const pathToActualFile = this.project.pathToProject + this.path + '.actual-file';
             const tFile = vault.getFileByPath(pathToActualFile);
             if (tFile === null) {
                 throw new Error('');
@@ -35,8 +34,8 @@ export abstract class RealFile extends GEODEFile {
             
         }
     }
-    override async DisplayProperties(anp: AppAndProject, thumbnailDiv: HTMLDivElement): Promise<void> {
-        const manager = anp.project.fileManager;
+    override async DisplayProperties(view: GEODEView, thumbnailDiv: HTMLDivElement): Promise<void> {
+        const manager = this.project.fileManager;
         manager.propertiesDiv.empty();
 		const nameInput = manager.propertiesDiv.createEl('input', { type: 'text', value: this.name } );
 		manager.propertiesDiv.createEl('div', { text: 'Type: ' + this.type } );
@@ -44,23 +43,22 @@ export abstract class RealFile extends GEODEFile {
         this.DisplayActualFile(currFileDiv);
 		const fileInput = manager.propertiesDiv.createEl('input', { type: 'file' } );
 		
-        const vault = anp.app.vault;
-        const project = anp.project;
+        const vault = view.app.vault;
 
         nameInput.onchange = async () => {
             const originalPath = this.path;
-            const tFile1 = vault.getFileByPath(project.pathToProject + originalPath + '.md');
-            const tFile2 = vault.getFileByPath(project.pathToProject + originalPath + '.actual-file');
+            const tFile1 = vault.getFileByPath(this.project.pathToProject + originalPath + '.md');
+            const tFile2 = vault.getFileByPath(this.project.pathToProject + originalPath + '.actual-file');
             const currName = this.name;
             const newPath = this.path.slice(0, -currName.length) + nameInput.value;
             if (tFile1 !== null) {
-                vault.rename(tFile1, project.pathToProject + newPath + '.md');
+                vault.rename(tFile1, this.project.pathToProject + newPath + '.md');
             }
             if (tFile2 !== null) {
-                vault.rename(tFile2, project.pathToProject + newPath + '.actual-file');
+                vault.rename(tFile2, this.project.pathToProject + newPath + '.actual-file');
             }
             this.path = newPath;
-            this.DisplayThumbnail(anp, thumbnailDiv);
+            this.DisplayThumbnail(view, thumbnailDiv);
         }
         fileInput.onchange = async () => {
             const fileArray = fileInput.files;
@@ -70,23 +68,23 @@ export abstract class RealFile extends GEODEFile {
                 const arrayBuffer = await file.arrayBuffer();
                 const blob = new Blob([arrayBuffer]);
                 this.src = URL.createObjectURL(blob);
-                const pathToMDFile = normalizePath(anp.project.pathToProject + this.path + '.md');
-                const pathToActualFile = normalizePath(anp.project.pathToProject + this.path + '.actual-file');
-                await anp.app.vault.adapter.write(pathToMDFile, JSON.stringify(this));
-                await anp.app.vault.adapter.writeBinary(pathToActualFile, arrayBuffer);
+                const pathToMDFile = normalizePath(this.project.pathToProject + this.path + '.md');
+                const pathToActualFile = normalizePath(this.project.pathToProject + this.path + '.actual-file');
+                await vault.adapter.write(pathToMDFile, JSON.stringify(this));
+                await vault.adapter.writeBinary(pathToActualFile, arrayBuffer);
             }
             currFileDiv.empty();
             this.DisplayActualFile(currFileDiv);
         }
     }
     abstract DisplayActualFile(div: HTMLDivElement): Promise<HTMLElement>;
-    async Save(anp: AppAndProject): Promise<void> {
-        await super.Save(anp);
+    async Save(view: GEODEView, project: Project): Promise<void> {
+        await super.Save(view, project);
         try {
             const response = await fetch(this.data);
             const arrayBuffer = await response.arrayBuffer();
-            const pathToActualFile = normalizePath(anp.project.pathToProject + this.path + '.actual-file');
-            await anp.app.vault.adapter.writeBinary(pathToActualFile, arrayBuffer);
+            const pathToActualFile = normalizePath(project.pathToProject + this.path + '.actual-file');
+            await view.app.vault.adapter.writeBinary(pathToActualFile, arrayBuffer);
         } catch {
             console.log('Error converting ' + this.path.valueOf() + ' to an actual file');
         }

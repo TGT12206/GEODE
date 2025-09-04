@@ -1,9 +1,10 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystBlock } from "../block";
 import { IfElse } from "./if-else";
 
 export class IfElseBlock extends AmethystBlock {
     instance: IfElse;
-    override DisplayBlock(): void {
+    override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-if-block vbox';
@@ -15,8 +16,8 @@ export class IfElseBlock extends AmethystBlock {
         div.createEl('div', { text: 'Else' } );
         const function2Div = div.createDiv();
 
-        this.CreateValOrFunctParameterDiv(0, conditionDiv);
-        this.CreateFunctParameterDiv(1, function1Div);
-        this.CreateFunctParameterDiv(2, function2Div);
+        this.CreateValOrFunctParameterDiv(0, conditionDiv, view);
+        this.CreateFunctParameterDiv(1, function1Div, view);
+        this.CreateFunctParameterDiv(2, function2Div, view);
     }
 }

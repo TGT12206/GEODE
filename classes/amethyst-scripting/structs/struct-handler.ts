@@ -1,3 +1,4 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystBoolean } from "./boolean/boolean";
 import { AmethystBooleanEditor } from "./boolean/boolean-editor";
 import { AmethystNumber } from "./number/number";
@@ -58,16 +59,16 @@ export class AmethystStructHandler {
      * @param editorDiv The div allocated for the editor.
      * @returns The editor of the variable
      */
-    static CreateEditor(variable: AmethystStruct, editorDiv: HTMLDivElement): AmethystStructEditor {
+    static CreateEditor(variable: AmethystStruct, editorDiv: HTMLDivElement, view: GEODEView): AmethystStructEditor {
         switch(variable.type) {
             case 'none':
             case 'boolean':
             default:
-                return new AmethystBooleanEditor(variable, editorDiv);
+                return new AmethystBooleanEditor(variable, editorDiv, view);
             case 'number':
-                return new AmethystNumberEditor(variable, editorDiv);
+                return new AmethystNumberEditor(variable, editorDiv, view);
             case 'string':
-                return new AmethystStringEditor(variable, editorDiv);
+                return new AmethystStringEditor(variable, editorDiv, view);
         }
     }
 }

@@ -1,3 +1,4 @@
+import { GEODEView } from "classes/geode-view";
 import { AmethystBlock } from "../block";
 import { DoNothing } from "./do-nothing";
 
@@ -13,8 +14,8 @@ export class DoNothingBlock extends AmethystBlock {
      */
     override RemoveParameter(): void { }
 
-    override DisplayBlock(): void {
-        super.DisplayBlock();
+    override DisplayBlock(view: GEODEView): void {
+        super.DisplayBlock(view);
         this.div.classList.add('geode-do-nothing-block');
     }
 }

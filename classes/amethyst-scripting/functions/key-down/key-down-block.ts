@@ -1,10 +1,11 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystBlock } from "../block";
 import { KeyDown } from "./key-down";
+import { GEODEView } from "classes/geode-view";
 
 export class KeyDownBlock extends AmethystBlock {
     instance: KeyDown;
-    override DisplayBlock(): void {
+    override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
         div.className = 'geode-script-block geode-key-down-block hbox';
@@ -20,9 +21,9 @@ export class KeyDownBlock extends AmethystBlock {
         keySelect.value = (<AmethystStruct> this.instance.parameters[0]).value;
         AmethystBlock.AdjustDropdownWidth(keySelect, div);
 
-        keySelect.onchange = () => {
+        view.registerDomEvent(keySelect, 'change', () => {
             (<AmethystStruct> this.instance.parameters[0]).value = keySelect.value;
             AmethystBlock.AdjustDropdownWidth(keySelect, div);
-        }
+        });
     }
 }

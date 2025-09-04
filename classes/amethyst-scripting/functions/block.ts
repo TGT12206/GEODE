@@ -1,22 +1,23 @@
-import { AppAndProject } from "classes/project";
 import { AmethystFunction } from "./function";
 import { AmethystStruct } from "../structs/struct";
 import { AmethystFunctionHandler } from "./function-handler";
 import { AmethystStructHandler } from "../structs/struct-handler";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
 export abstract class AmethystBlock {
-    anp: AppAndProject;
+    project: Project;
     instance: AmethystFunction;
     div: HTMLDivElement;
     parentEI: AmethystBlock | undefined;
-    constructor(instance: AmethystFunction, blockDiv: HTMLDivElement, anp: AppAndProject) {
+    constructor(instance: AmethystFunction, blockDiv: HTMLDivElement, view: GEODEView, project: Project) {
         this.instance = instance;
         this.div = blockDiv;
-        this.anp = anp;
-        this.DisplayBlock();
+        this.project = project;
+        this.DisplayBlock(view);
     }
     
-    DisplayBlock(): void {
+    DisplayBlock(view: GEODEView): void {
         this.div.empty();
         this.div.className = 'geode-script-block';
     }
@@ -26,26 +27,26 @@ export abstract class AmethystBlock {
         input.style.width = tempEl.getBoundingClientRect().width + 'px';
         tempEl.remove();
     }
-    CreateValOrFunctParameterDiv(index: number, paramDiv: HTMLDivElement): void | AmethystBlock {
+    CreateValOrFunctParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): void | AmethystBlock {
         const param = this.instance.parameters[index];
         if (param instanceof AmethystStruct) {
-            return this.CreateValParameterDiv(index, paramDiv);
+            return this.CreateValParameterDiv(index, paramDiv, view);
         } else {
-            return this.CreateFunctParameterDiv(index, paramDiv);
+            return this.CreateFunctParameterDiv(index, paramDiv, view);
         }
     }
-    CreateValParameterDiv(index: number, paramDiv: HTMLDivElement): void {
-        AmethystBlock.SetParameterDiv(this.anp, this, paramDiv, index);
+    CreateValParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): void {
+        AmethystBlock.SetParameterDiv(view, this.project, this, paramDiv, index);
         const param = <AmethystStruct> this.instance.parameters[index];
-        AmethystStructHandler.CreateEditor(param, paramDiv);
+        AmethystStructHandler.CreateEditor(param, paramDiv, view);
     }
-    CreateFunctParameterDiv(index: number, paramDiv: HTMLDivElement): AmethystBlock {
-        AmethystBlock.SetParameterDiv(this.anp, this, paramDiv, index);
+    CreateFunctParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): AmethystBlock {
+        AmethystBlock.SetParameterDiv(view, this.project, this, paramDiv, index);
         const param = <AmethystFunction> this.instance.parameters[index];
-        const paramEI = AmethystFunctionHandler.CreateBlock(param, paramDiv, this.anp);
+        const paramEI = AmethystFunctionHandler.CreateBlock(param, paramDiv, view, this.project);
         paramEI.parentEI = this;
         if (paramEI.instance.type !== 'none') {
-            AmethystBlock.MakeBlockDraggable(paramEI, this.anp, false);
+            AmethystBlock.MakeBlockDraggable(paramEI, view, this.project, false);
         }
         return paramEI;
     }
@@ -57,10 +58,10 @@ export abstract class AmethystBlock {
             }
         }
     }
-    static MakeBlockDraggable(block: AmethystBlock, anp: AppAndProject, isCopy: boolean) {
-        const scriptEditor = anp.project.scriptEditor;
+    static MakeBlockDraggable(block: AmethystBlock, view: GEODEView, project: Project, isCopy: boolean) {
+        const scriptEditor = project.scriptEditor;
         block.div.draggable = true;
-        block.div.addEventListener("dragstart", (event: DragEvent) => {
+        view.registerDomEvent(block.div, 'dragstart', (event: DragEvent) => {
             event.stopPropagation();
             if (event.dataTransfer !== null) {
                 event.dataTransfer.effectAllowed = 'copy';
@@ -71,17 +72,17 @@ export abstract class AmethystBlock {
             scriptEditor.delDiv.style.height = '10%';
         });
 
-        block.div.addEventListener('dragend', (event: DragEvent) => {
+        view.registerDomEvent(block.div, 'dragend', (event: DragEvent) => {
             event.stopPropagation();
             event.preventDefault();
             scriptEditor.blocksDiv.style.height = '100%';
             scriptEditor.delDiv.style.height = '0%';
         });
     }
-    protected static SetParameterDiv(anp: AppAndProject, afei: AmethystBlock, paramDiv: HTMLDivElement, paramIndex: number) {
-        const scriptEditor = anp.project.scriptEditor;
+    protected static SetParameterDiv(view: GEODEView, project: Project, afei: AmethystBlock, paramDiv: HTMLDivElement, paramIndex: number) {
+        const scriptEditor = project.scriptEditor;
 
-        paramDiv.addEventListener('dragover', (event: DragEvent) => {
+        view.registerDomEvent(paramDiv, 'dragover', (event: DragEvent) => {
             event.stopPropagation();
             event.preventDefault();
             if (event.dataTransfer !== null) {
@@ -90,12 +91,12 @@ export abstract class AmethystBlock {
             paramDiv.classList.add('geode-block-slot-hover');
         });
 
-        paramDiv.addEventListener('dragleave', (event: DragEvent) => {
+        view.registerDomEvent(paramDiv, 'dragleave', (event: DragEvent) => {
             event.stopPropagation();
             paramDiv.classList.remove('geode-block-slot-hover');
         });
 
-        paramDiv.addEventListener('drop', (event: DragEvent) => {
+        view.registerDomEvent(paramDiv, 'drop', (event: DragEvent) => {
             event.stopPropagation();
             if (scriptEditor.currentlyDraggedBlock === undefined) {
                 return;
@@ -107,9 +108,9 @@ export abstract class AmethystBlock {
             if (!(droppedBlock.parentEI === undefined || shouldCopy)) {
                 const parentEI = droppedBlock.parentEI;
                 parentEI.RemoveParameter(droppedBlock.instance);
-                parentEI.DisplayBlock();
+                parentEI.DisplayBlock(view);
             }
-            afei.DisplayBlock();
+            afei.DisplayBlock(view);
             event.preventDefault();
             scriptEditor.currentlyDraggedBlock = undefined;
         });

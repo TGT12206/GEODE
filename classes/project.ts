@@ -8,6 +8,7 @@ import { GEODEFileManager } from "./tabs/file-manager";
 import { AmethystFunction } from "./amethyst-scripting/functions/function";
 import { AmethystFunctionHandler } from "./amethyst-scripting/functions/function-handler";
 import { AmethystStructHandler } from "./amethyst-scripting/structs/struct-handler";
+import { GEODEView } from "./geode-view";
 
 export class Project {
     pathToProject: string;
@@ -46,42 +47,40 @@ export class Project {
     }
 
     activeTabID: number;
-    anp: AppAndProject
 
     SwitchToTab: (index: number) => Promise<void>;
 
-    constructor(app: App) {
-        this.anp = new AppAndProject(app, this);
+    constructor() {
         this.tabs = [];
-        this.tabs.push(new GEODEFileManager(this.anp));
-        this.tabs.push(new SceneView(this.anp));
-        this.tabs.push(new ScriptEditor(this.anp));
-        this.tabs.push(new GameView(this.anp));
+        this.tabs.push(new GEODEFileManager(this));
+        this.tabs.push(new SceneView(this));
+        this.tabs.push(new ScriptEditor(this));
+        this.tabs.push(new GameView(this));
         this.activeTabID = 0;
     }
 
-    async Load() {
-        await this.LoadFiles();
-        await this.GrabFileDependencies();
-        await this.LoadObjects();
+    async Load(view: GEODEView) {
+        await this.LoadFiles(view);
+        await this.GrabFileDependencies(view);
+        await this.LoadObjects(view);
     }
-    async LoadFiles() {
-        await this.fileManager.LoadFiles(this.anp);
+    async LoadFiles(view: GEODEView) {
+        await this.fileManager.LoadFiles(view);
     }
-    async GrabFileDependencies() {
+    async GrabFileDependencies(view: GEODEView) {
         const fm = this.fileManager;
         for (let i = 0; i < fm.files.length; i++) {
-            await fm.files[i].GrabDependencies(this.anp);
+            await fm.files[i].GrabDependencies(view);
         }
     }
-    async LoadObjects() {
+    async LoadObjects(view: GEODEView) {
         const sv = this.sceneView;
-        const path = normalizePath(this.anp.project.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
-        const tFile = this.anp.app.vault.getFileByPath(path);
+        const path = normalizePath(this.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
+        const tFile = view.app.vault.getFileByPath(path);
         if (tFile === null) {
             return;
         }
-        const data = await this.anp.app.vault.cachedRead(tFile);
+        const data = await view.app.vault.cachedRead(tFile);
         const plainObj = JSON.parse(data);
         sv.objects = plainObj.objects;
         const loadFunction = (plainFunct: any): AmethystFunction => {
@@ -127,7 +126,7 @@ export class Project {
         }
     }
 
-    async Display(div: HTMLDivElement) {
+    async Display(div: HTMLDivElement, view: GEODEView) {
         div.empty();
 
         const tabBar = div.createDiv('geode-tab-bar hbox');
@@ -141,15 +140,15 @@ export class Project {
         const gameTab = tabBar.createEl('button', { text: GameView.icon } );
         const saveButton = tabBar.createEl('button', { text: '💾Save' } );
         saveButton.className = 'geode-secondary-button';
-        saveButton.onclick = async () => {
+        view.registerDomEvent(saveButton, 'click', async () => {
             saveButton.disabled = true;
             saveButton.textContent = '⟳Saving...';
-            const path = normalizePath(this.anp.project.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
-            const data = JSON.stringify(new SceneDTO(this.anp.project.sceneView.objects));
-            await this.anp.app.vault.adapter.write(path, data);
+            const path = normalizePath(this.pathToProject + '/RESERVED FOLDER DO NOT RENAME/Objects.md');
+            const data = JSON.stringify(new SceneDTO(this.sceneView.objects));
+            await view.app.vault.adapter.write(path, data);
             saveButton.disabled = false;
             saveButton.textContent = '💾Save';
-        }
+        });
 
         filesTab.className = 'geode-tab-icon';
         sceneViewTab.className = 'geode-tab-icon';
@@ -162,39 +161,30 @@ export class Project {
         tabIcons.push(gameTab);
 
         tabIcons[this.activeTabID].className = 'geode-tab-icon-opened';
-        this.tabs[this.activeTabID].Focus(tabContainer);
+        this.tabs[this.activeTabID].Focus(tabContainer, view);
 
         const switchToTab = async (index: number) => {
             tabIcons[this.activeTabID].className = 'geode-tab-icon';
-            await this.tabs[this.activeTabID].UnFocus(tabContainer);
+            await this.tabs[this.activeTabID].UnFocus(tabContainer, view);
             this.activeTabID = index;
             tabIcons[this.activeTabID].className = 'geode-tab-icon-opened';
-            this.tabs[this.activeTabID].Focus(tabContainer);
+            this.tabs[this.activeTabID].Focus(tabContainer, view);
         }
 
         this.SwitchToTab = switchToTab;
 
-        filesTab.onclick = () => {
+        view.registerDomEvent(filesTab, 'click', () => {
             switchToTab(0);
-        }
-        sceneViewTab.onclick = () => {
+        });
+        view.registerDomEvent(sceneViewTab, 'click', () => {
             switchToTab(1);
-        }
-        scriptEditorTab.onclick = () => {
+        });
+        view.registerDomEvent(scriptEditorTab, 'click', () => {
             switchToTab(2);
-        }
-        gameTab.onclick = () => {
+        });
+        view.registerDomEvent(gameTab, 'click', () => {
             switchToTab(3);
-        }
-    }
-}
-
-export class AppAndProject {
-    app: App;
-    project: Project;
-    constructor(app: App, project: Project) {
-        this.app = app;
-        this.project = project;
+        });
     }
 }
 

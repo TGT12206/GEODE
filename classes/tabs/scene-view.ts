@@ -1,7 +1,8 @@
 import { Tab } from "./tab";
-import { AppAndProject } from "classes/project";
 import { GEODEObject } from "../geode-objects/geode-object";
 import { GEODEObjectHandler } from "classes/geode-objects/geode-object-handler";
+import { GEODEView } from "classes/geode-view";
+import { Project } from "classes/project";
 
 export class SceneView extends Tab {
     static override icon = '🌐';
@@ -10,12 +11,12 @@ export class SceneView extends Tab {
     sceneDiv: HTMLDivElement;
     inspectorDiv: HTMLDivElement;
     
-    constructor(anp: AppAndProject) {
-        super(anp);
+    constructor(project: Project) {
+        super(project);
         this.objects = [];
     }
 
-    override Focus(div: HTMLDivElement): void {
+    override async Focus(div: HTMLDivElement, view: GEODEView): Promise<void> {
         div.empty();
 
         div.className = 'geode-tab-container hbox';
@@ -32,37 +33,35 @@ export class SceneView extends Tab {
             const objectDiv = listDiv.createDiv('geode-object-in-list hbox pointer-hover');
             const currObj = this.objects[i];
             objectDiv.textContent = currObj.idInScene + ': ' + currObj.name;
-            objectDiv.onclick = () => {
-                GEODEObjectHandler.CreateEditor(currObj, this.anp, this.inspectorDiv);
-            }
+            view.registerDomEvent(objectDiv, 'click', () => {
+                GEODEObjectHandler.CreateEditor(currObj, view, this.project, this.inspectorDiv);
+            });
         }
         const buttonsDiv = this.hierarchyDiv.createDiv('hbox');
         const refreshButton = buttonsDiv.createEl('button', { text: '⟳' } );
         const addObjButton = buttonsDiv.createEl('button', { text: '+' } );
         refreshButton.className = 'geode-secondary-button';
         addObjButton.className = 'geode-add-button';
-        refreshButton.style.width = '50%';
-        addObjButton.style.width = '50%';
-        refreshButton.onclick = () => {
+        view.registerDomEvent(refreshButton, 'click', () => {
             this.sceneDiv.empty();
             for (let i = 0; i < this.objects.length; i++) {
-                const currObj = GEODEObjectHandler.CreateRuntimeObject(this.objects[i], this.anp, this.sceneDiv.createDiv());
+                const currObj = GEODEObjectHandler.CreateRuntimeObject(this.objects[i], this.project, this.sceneDiv.createDiv());
                 currObj.Render();
             }
-        }
-        addObjButton.onclick = () => {
+        });
+        view.registerDomEvent(addObjButton, 'click', () => {
             const index = this.objects.length;
             const newObj = new GEODEObject(index);
             const objectDiv = listDiv.createDiv('geode-object-in-list hbox pointer-hover');
             objectDiv.createEl('div', { text: newObj.idInScene + ': ' + newObj.name } );
             this.objects.push(newObj);
-            objectDiv.onclick = () => {
-                GEODEObjectHandler.CreateEditor(newObj, this.anp, this.inspectorDiv);
-            }
-        }
+            view.registerDomEvent(objectDiv, 'click', () => {
+                GEODEObjectHandler.CreateEditor(newObj, view, this.project, this.inspectorDiv);
+            });
+        });
     }
 
-    override UnFocus(div: HTMLDivElement): void | Promise<void> {
+    override async UnFocus(div: HTMLDivElement): Promise<void> {
         div.empty();
     }
 }

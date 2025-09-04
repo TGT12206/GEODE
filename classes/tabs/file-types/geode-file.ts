@@ -1,12 +1,13 @@
-import { AppAndProject } from 'classes/project';
-import { GEODEFileManager } from '../file-manager';
+import { Project } from 'classes/project';
 import { GEODEFolder } from './geode-folder';
 import { normalizePath } from 'obsidian';
+import { GEODEView } from 'classes/geode-view';
 
 export abstract class GEODEFile {
     parentPath: String;
-    getParent(manager: GEODEFileManager): GEODEFolder {
-        return <GEODEFolder> manager.GetFile(this.parentPath);
+    project: Project;
+    getParent(): GEODEFolder {
+        return <GEODEFolder> this.project.fileManager.GetFile(this.parentPath);
     }
 
     /**
@@ -23,54 +24,54 @@ export abstract class GEODEFile {
 
     type: string;
     abstract get data(): any;
-    constructor(path: String, parentPath: String) {
+    constructor(path: String, parentPath: String, project: Project) {
         this.parentPath = parentPath;
         this.path = path;
+        this.project = project;
     }
-    async GrabDependencies(anp: AppAndProject): Promise<void> {}
-    async DisplayThumbnail(anp: AppAndProject, thumbnailDiv: HTMLDivElement): Promise<void> {
-        const manager = anp.project.fileManager;
+    async GrabDependencies(view: GEODEView): Promise<void> {}
+    async DisplayThumbnail(view: GEODEView, thumbnailDiv: HTMLDivElement): Promise<void> {
+        const manager = this.project.fileManager;
         thumbnailDiv.empty();
 		thumbnailDiv.onclick = async () => {
-            this.getParent(manager).SelectFile(anp, this, thumbnailDiv);
+            this.getParent().SelectFile(view, this, thumbnailDiv);
 		}
 		thumbnailDiv.createEl('div', { text: this.name } );
 		thumbnailDiv.createEl('div', { text: 'Type: ' + this.type } );
     }
-    async Open(anp: AppAndProject): Promise<void> {
-        const manager = anp.project.fileManager;
+    async Open(view: GEODEView, project: Project): Promise<void> {
+        const manager = project.fileManager;
         manager.fileDiv.empty();
         manager.fileDiv.className = 'geode-file-manager-files vbox';
 
-        const backButton = manager.fileDiv.createEl('button', { text: 'Go back to ' + this.getParent(manager).name } );
+        const backButton = manager.fileDiv.createEl('button', { text: 'Go back to ' + this.getParent().name } );
 
         backButton.onclick = async () => {
-            this.getParent(manager).Open(anp);
+            this.getParent().Open(view, project);
         }
     }
-    async DisplayProperties(anp: AppAndProject, thumbnailDiv: HTMLDivElement) {
-        const manager = anp.project.fileManager;
+    async DisplayProperties(view: GEODEView, thumbnailDiv: HTMLDivElement) {
+        const manager = this.project.fileManager;
         manager.propertiesDiv.empty();
 		const nameInput = manager.propertiesDiv.createEl('input', { type: 'text', value: this.name } );
 		manager.propertiesDiv.createEl('div', { text: 'Type: ' + this.type } );
         
-        const vault = anp.app.vault;
-        const project = anp.project;
+        const vault = view.app.vault;
 
         nameInput.onchange = async () => {
             const originalPath = this.path;
-            const tFile = vault.getFileByPath(project.pathToProject + originalPath + '.md');
+            const tFile = vault.getFileByPath(this.project.pathToProject + originalPath + '.md');
             const currName = this.name;
             const newPath = this.path.slice(0, -currName.length) + nameInput.value;
             if (tFile !== null) {
-                vault.rename(tFile, project.pathToProject + newPath + '.md');
+                vault.rename(tFile, this.project.pathToProject + newPath + '.md');
             }
             this.path = newPath;
-            this.DisplayThumbnail(anp, thumbnailDiv);
+            this.DisplayThumbnail(view, thumbnailDiv);
         }
     }
-    async Save(anp: AppAndProject) {
-        const path = normalizePath(anp.project.pathToProject + this.path + '.md');
-        anp.app.vault.adapter.write(path, JSON.stringify(this.data));
+    async Save(view: GEODEView, project: Project) {
+        const path = normalizePath(project.pathToProject + this.path + '.md');
+        view.app.vault.adapter.write(path, JSON.stringify(this.data));
     }
 }

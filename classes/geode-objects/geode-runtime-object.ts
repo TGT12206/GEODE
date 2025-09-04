@@ -1,24 +1,26 @@
 import { AmethystRuntimeFunction } from "classes/amethyst-scripting/functions/runtime-function";
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
-import { AppAndProject } from "classes/project";
 import { GEODEObject } from "./geode-object";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { AmethystFunctionHandler } from "classes/amethyst-scripting/functions/function-handler";
 import { GEODEObjectHandler } from "./geode-object-handler";
 import { ImageFile, VideoFile } from "classes/tabs/file-types/real-file";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
 export class GEODERuntimeObject {
     idInScene: number;
     name: string;
+    project: Project;
     onStart: AmethystRuntimeFunction[];
     onNewFrame: AmethystRuntimeFunction[];
     variables: AmethystStruct[];
     objDiv: HTMLDivElement;
-    anp: AppAndProject;
     private prevSpritePath: string;
-    constructor(obj: GEODEObject, anp: AppAndProject, objDiv: HTMLDivElement) {
+    constructor(obj: GEODEObject, project: Project, objDiv: HTMLDivElement) {
         this.idInScene = obj.idInScene;
         this.name = obj.name;
+        this.project = project;
         this.variables = [];
         this.onStart = [];
         this.onNewFrame = [];
@@ -26,13 +28,12 @@ export class GEODERuntimeObject {
             this.variables.push(AmethystStructHandler.Copy(obj.variables[i]));
         }
         for (let i = 0; i < obj.onStart.length; i++) {
-            this.onStart.push(AmethystFunctionHandler.CreateRuntimeInstance(obj.onStart[i], anp));
+            this.onStart.push(AmethystFunctionHandler.CreateRuntimeInstance(obj.onStart[i], project));
         }
         for (let i = 0; i < obj.onNewFrame.length; i++) {
-            this.onNewFrame.push(AmethystFunctionHandler.CreateRuntimeInstance(obj.onNewFrame[i], anp));
+            this.onNewFrame.push(AmethystFunctionHandler.CreateRuntimeInstance(obj.onNewFrame[i], project));
         }
         this.objDiv = objDiv;
-        this.anp = anp;
         this.prevSpritePath = '';
         this.SetObjDivCSSProperties();
     }
@@ -44,7 +45,7 @@ export class GEODERuntimeObject {
         const spritePath = GEODEObjectHandler.GetVariable(this, 'Sprite Path').value;
         if (this.prevSpritePath !== spritePath) {
             try {
-                const mediaFile = <ImageFile | VideoFile> this.anp.project.fileManager.GetFileByPrimitivePath(spritePath);
+                const mediaFile = <ImageFile | VideoFile> this.project.fileManager.GetFileByPrimitivePath(spritePath);
                 const spriteSrc = mediaFile.data;
                 let mediaEl;
                 this.objDiv.empty();
@@ -101,14 +102,14 @@ export class GEODERuntimeObject {
         this.RefreshSprite();
         this.SetLocationAndWidth();
     }
-    OnStart() {
+    OnStart(view: GEODEView) {
         for (let i = 0; i < this.onStart.length; i++) {
-            this.onStart[i].Execute();
+            this.onStart[i].Execute(view);
         }
     }
-    OnNewFrame() {
+    OnNewFrame(view: GEODEView) {
         for (let i = 0; i < this.onNewFrame.length; i++) {
-            this.onNewFrame[i].Execute();
+            this.onNewFrame[i].Execute(view);
         }
     }
 }

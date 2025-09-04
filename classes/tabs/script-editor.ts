@@ -3,6 +3,8 @@ import { GEODEObject } from "../geode-objects/geode-object";
 import { AmethystFunction } from "classes/amethyst-scripting/functions/function";
 import { AmethystBlock } from "classes/amethyst-scripting/functions/block";
 import { AmethystFunctionHandler } from "classes/amethyst-scripting/functions/function-handler";
+import { GEODEView } from "classes/geode-view";
+import { Project } from "classes/project";
 
 export class ScriptEditor extends Tab {
     static override icon = '📜';
@@ -13,10 +15,10 @@ export class ScriptEditor extends Tab {
     currentlyDraggedBlock: AmethystBlock | undefined;
     currentlyDraggedBlockIsCopy: boolean;
 
-    override async Focus(div: HTMLDivElement): Promise<void> {
+    override async Focus(div: HTMLDivElement, view: GEODEView): Promise<void> {
         div.empty();
 
-        const objs = this.anp.project.sceneView.objects;
+        const objs = this.project.sceneView.objects;
         if (this.currentObject === undefined) {
             if (objs.length > 0) {
                 this.currentObject = objs[0];
@@ -63,35 +65,35 @@ export class ScriptEditor extends Tab {
                 scriptType.push(chain);
                 clusterNumberInput.max = scriptType.length + '';
             }
-            AmethystFunctionHandler.CreateBlock(scriptType[index], this.scriptDiv.createDiv(), this.anp);
+            AmethystFunctionHandler.CreateBlock(scriptType[index], this.scriptDiv.createDiv(), view, this.project);
         }
-        this.CreateBlockPool();
+        this.CreateBlockPool(view);
         LoadScript();
         
-        objIDInput.onchange = () => {
+        view.registerDomEvent(objIDInput, 'change', () => {
             this.currentObject = objs[parseInt(objIDInput.value)];
             const obj = this.currentObject;
             const scriptType = clusterTypeInput.value === 'On Start' ? obj.onStart : obj.onNewFrame;
             clusterNumberInput.value = '0';
             clusterNumberInput.max = scriptType.length + '';
             LoadScript();
-        }
-        clusterTypeInput.onchange = () => {
+        });
+        view.registerDomEvent(clusterTypeInput, 'change', () => {
             const obj = this.currentObject;
             const scriptType = clusterTypeInput.value === 'On Start' ? obj.onStart : obj.onNewFrame;
             clusterNumberInput.value = '0';
             clusterNumberInput.max = scriptType.length + '';
             LoadScript();
-        }
-        clusterNumberInput.onchange = () => {
+        });
+        view.registerDomEvent(clusterNumberInput, 'change', () => {
             LoadScript();
-        }
+        });
     }
 
-    private CreateBlockPool() {
+    private CreateBlockPool(view: GEODEView) {
         this.blocksDiv.empty();
 
-        this.delDiv.addEventListener('dragover', (event: DragEvent) => {
+        view.registerDomEvent(this.delDiv, 'dragover', (event: DragEvent) => {
             event.preventDefault();
             if (event.dataTransfer !== null) {
                 event.dataTransfer.dropEffect = "copy";
@@ -99,33 +101,32 @@ export class ScriptEditor extends Tab {
             this.delDiv.className = 'geode-block-delete-div-hover';
         });
 
-        this.delDiv.addEventListener("dragleave", (event: DragEvent) => {
+        view.registerDomEvent(this.delDiv, 'dragleave', (event: DragEvent) => {
             event.stopPropagation();
             this.delDiv.className = 'geode-block-delete-div';
         });
 
-        this.delDiv.addEventListener('drop', (event: DragEvent) => {
+        view.registerDomEvent(this.delDiv, 'drop', (event: DragEvent) => {
             if (!(this.currentlyDraggedBlock === undefined || this.currentlyDraggedBlockIsCopy)) {
                 this.currentlyDraggedBlock.div.remove();
                 const parentEI = this.currentlyDraggedBlock.parentEI;
                 if (parentEI !== undefined) {
                     parentEI.RemoveParameter(this.currentlyDraggedBlock.instance);
-                    parentEI.DisplayBlock();
+                    parentEI.DisplayBlock(view);
                 }
             }
         });
         
         const knownTypes = AmethystFunction.knownTypes;
-        const anp = this.anp;
         for (let i = 1; i < knownTypes.length; i++) {
             const instance = AmethystFunctionHandler.Create(knownTypes[i]);
-            const block = AmethystFunctionHandler.CreateBlock(instance, this.blocksDiv.createDiv(), anp);
-            AmethystBlock.MakeBlockDraggable(block, anp, true);
+            const block = AmethystFunctionHandler.CreateBlock(instance, this.blocksDiv.createDiv(), view, this.project);
+            AmethystBlock.MakeBlockDraggable(block, view, this.project, true);
         }
     }
 
 
-    override UnFocus(div: HTMLDivElement): void | Promise<void> {
+    override async UnFocus(div: HTMLDivElement): Promise<void> {
         div.empty();
     }
 }
