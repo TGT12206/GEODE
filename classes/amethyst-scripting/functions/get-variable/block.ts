@@ -1,13 +1,13 @@
 import { GEODEView } from "classes/geode-view";
 import { AmethystBlock } from "../block";
-import { GetVariable } from "./get-variable";
+import { GetVariable } from "./instance";
 
 export class GetVariableBlock extends AmethystBlock {
     instance: GetVariable;
     override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-get-variable-block hbox';
+        div.className = 'geode-script-block geode-get-variable-block hbox' + (this.isRightType ? '' : ' geode-type-mismatch');
 
         const varName = this.instance.parameters[0];
         const objID = this.instance.parameters[1];
@@ -36,12 +36,11 @@ export class GetVariableBlock extends AmethystBlock {
         
         view.registerDomEvent(objIDInput, 'change', () => {
             this.instance.parameters[1].value = parseInt(objIDInput.value.split(':')[0]);
-            AmethystBlock.AdjustDropdownWidth(objIDInput, div);
-            GetAllVarNames();
+            this.parentEI?.DisplayBlock(view);
         });
         view.registerDomEvent(varNameInput, 'change', () => {
             this.instance.parameters[0].value = varNameInput.value;
-            AmethystBlock.AdjustDropdownWidth(varNameInput, div);
+            this.parentEI?.DisplayBlock(view);
         });
 
         GetAllVarNames();

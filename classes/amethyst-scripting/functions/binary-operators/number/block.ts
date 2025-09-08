@@ -8,14 +8,14 @@ export class NumberBinaryOperatorBlock extends AmethystBlock {
     override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-binary-operator-block hbox';
+        div.className = 'geode-script-block geode-binary-operator-block hbox' + (this.isRightType ? '' : ' geode-type-mismatch');
         
         const num1Div = div.createDiv();
         const operatorSelect = div.createEl('select');
         const num2Div = div.createDiv();
 
-        this.CreateValOrFunctParameterDiv(0, num1Div, view);
-        this.CreateValOrFunctParameterDiv(2, num2Div, view);
+        this.DisplaySlot(0, num1Div, view, 'number');
+        this.DisplaySlot(2, num2Div, view, 'number');
 
         operatorSelect.createEl('option', { text: '+', value: '+' } );
         operatorSelect.createEl('option', { text: '-', value: '-' } );

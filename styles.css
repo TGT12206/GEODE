@@ -261,14 +261,18 @@
 	height: 100%;
 	background-color: var(--geode-bg-color-2);
 }
-.geode-blocks-list {
+.geode-blocks-list-wrapper {
 	padding: 0.5vh;
 	width: 100%;
-	height: 100%;
+	height: 90%;
 	overflow: scroll;
-	gap: 1vh;
 	border-left-style: solid;
 	border-color: var(--geode-accent-color-3);
+}
+.geode-blocks-list {
+	width: 100%;
+	height: fit-content;
+	gap: 1vh;
 }
 .geode-block-inner-section {
 	gap: 0.5vh;
@@ -277,9 +281,11 @@
 	cursor: pointer;
 }
 .geode-block-delete-div {
+	height: 10%;
 	background-color: var(--geode-remove-color);
 }
-.geode-block-delete-div-hover {
+:is(.geode-block-delete-div:hover, .geode-block-delete-div-hover) {
+	height: 10%;
 	background-color: var(--geode-remove-color-hover);
 }
 /*#endregion Script Editor*/
@@ -300,6 +306,15 @@
 	border-width: 0.5vh;
 	border-radius: 1vh;
 	border-color: var(--geode-block-slot-hover);
+}
+.geode-script-block.geode-type-mismatch {
+	border-style: solid;
+	border-width: 0.5vh;
+	border-radius: 1vh;
+	border-color: var(--geode-remove-color);
+}
+.geode-value-input.geode-type-mismatch {
+	background-color: var(--geode-remove-color);
 }
 /*#region Chain*/
 .geode-chain-block {
@@ -332,18 +347,18 @@
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-central-color-2);
 }
-.geode-set-variable-block > div > :is(select, .geode-value-input) {
+.geode-set-variable-block > div > :is(select, :not(.geode-type-mismatch).geode-value-input) {
 	background-color: var(--geode-central-color-3);
 }
-.geode-set-variable-block > .geode-boolean-input.geode-unchecked {
+.geode-set-variable-block > :not(.geode-type-mismatch).geode-boolean-input.geode-unchecked {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-3);
 }
-.geode-set-variable-block > .geode-boolean-input.geode-checked {
+.geode-set-variable-block > :not(.geode-type-mismatch).geode-boolean-input.geode-checked {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-1);
 }
-.geode-set-variable-block > .geode-boolean-input.geode-checked:hover {
+.geode-set-variable-block > :not(.geode-type-mismatch).geode-boolean-input.geode-checked:hover {
 	border-color: var(--geode-central-color-3);
 	background-color: var(--geode-central-color-2);
 }
@@ -354,15 +369,15 @@
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-2);
 }
-.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-unchecked {
+.geode-if-block > .geode-block-inner-section > div > :not(.geode-type-mismatch).geode-boolean-input.geode-unchecked {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-3);
 }
-.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-checked {
+.geode-if-block > .geode-block-inner-section > div > :not(.geode-type-mismatch).geode-boolean-input.geode-checked {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-1);
 }
-.geode-if-block > .geode-block-inner-section > div > .geode-boolean-input.geode-checked:hover {
+.geode-if-block > .geode-block-inner-section > div > :not(.geode-type-mismatch).geode-boolean-input.geode-checked:hover {
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-accent-color-2);
 }
@@ -387,7 +402,13 @@
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-central-color-2);
 }
-:is(.geode-compare-values-block > select, .geode-compare-values-block > div > .geode-value-input) {
+:is(.geode-compare-values-block > select, .geode-compare-values-block > div > :not(.geode-type-mismatch).geode-value-input) {
+	background-color: var(--geode-central-color-3);
+}
+:is(.geode-compare-values-block > select, .geode-compare-values-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-checked) {
+	background-color: var(--geode-central-color-1);
+}
+:is(.geode-compare-values-block > select, .geode-compare-values-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-unchecked) {
 	background-color: var(--geode-central-color-3);
 }
 /*#endregion Compare Values*/
@@ -397,10 +418,32 @@
 	border-color: var(--geode-accent-color-3);
 	background-color: var(--geode-central-color-2);
 }
-:is(.geode-binary-operator-block > select, .geode-binary-operator-block > div > .geode-value-input) {
+:is(.geode-binary-operator-block > select, .geode-binary-operator-block > div > :not(.geode-type-mismatch).geode-value-input) {
 	background-color: var(--geode-central-color-3);
 }
-/*#endregion Number Operator*/
+:is(.geode-binary-operator-block > select, .geode-binary-operator-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-checked) {
+	background-color: var(--geode-central-color-1);
+}
+:is(.geode-binary-operator-block > select, .geode-binary-operator-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-unchecked) {
+	background-color: var(--geode-central-color-3);
+}
+/*#endregion Binary Operators*/
+
+/*#region Unary Operators*/
+.geode-unary-operator-block {
+	border-color: var(--geode-accent-color-3);
+	background-color: var(--geode-central-color-2);
+}
+:is(.geode-unary-operator-block > select, .geode-unary-operator-block > div > :not(.geode-type-mismatch).geode-value-input) {
+	background-color: var(--geode-central-color-3);
+}
+:is(.geode-unary-operator-block > select, .geode-unary-operator-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-checked) {
+	background-color: var(--geode-central-color-1);
+}
+:is(.geode-unary-operator-block > select, .geode-unary-operator-block > div > :not(.geode-type-mismatch).geode-boolean-input.geode-unchecked) {
+	background-color: var(--geode-central-color-3);
+}
+/*#endregion Unary Operators*/
 
 /*#endregion Blocks*/
 

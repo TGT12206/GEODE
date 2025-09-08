@@ -1,5 +1,5 @@
 import { AmethystFunction } from "./function";
-import { AmethystStruct } from "../structs/struct";
+import { AmethystStruct, varType } from "../structs/struct";
 import { AmethystFunctionHandler } from "./function-handler";
 import { AmethystStructHandler } from "../structs/struct-handler";
 import { Project } from "classes/project";
@@ -10,10 +10,12 @@ export abstract class AmethystBlock {
     instance: AmethystFunction;
     div: HTMLDivElement;
     parentEI: AmethystBlock | undefined;
-    constructor(instance: AmethystFunction, blockDiv: HTMLDivElement, view: GEODEView, project: Project) {
+    isRightType: boolean;
+    constructor(instance: AmethystFunction, blockDiv: HTMLDivElement, view: GEODEView, project: Project, isRightType: boolean) {
         this.instance = instance;
         this.div = blockDiv;
         this.project = project;
+        this.isRightType = isRightType;
         this.DisplayBlock(view);
     }
     
@@ -27,29 +29,55 @@ export abstract class AmethystBlock {
         input.style.width = tempEl.getBoundingClientRect().width + 'px';
         tempEl.remove();
     }
-    CreateValOrFunctParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): void | AmethystBlock {
+
+    /**
+     * Call this function if you are unsure whether your current parameter is a value or a function
+     * @param enforcedType what type must fill this slot? If the parameter doesn't match this type, it will be outlined in red if it is a function, or replaced if it is a value. Leave this field blank if there is no type requirement for this parameter.
+     */
+    DisplaySlot(index: number, paramDiv: HTMLDivElement, view: GEODEView, enforcedType: varType | undefined = undefined): void | AmethystBlock {
         const param = this.instance.parameters[index];
         if (param instanceof AmethystStruct) {
-            return this.CreateValParameterDiv(index, paramDiv, view);
+            return this.DisplayValueSlot(index, paramDiv, view, enforcedType);
         } else {
-            return this.CreateFunctParameterDiv(index, paramDiv, view);
+            return this.DisplayFunctionSlot(index, paramDiv, view, enforcedType);
         }
     }
-    CreateValParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): void {
-        AmethystBlock.SetParameterDiv(view, this.project, this, paramDiv, index);
+
+    /**
+     * Call this function if you are sure your current parameter is a value
+     * @param enforcedType what type must fill this slot? If the parameter doesn't match this type, it will be replaced with a default value. Leave this field blank if there is no type requirement for this parameter.
+     */
+    DisplayValueSlot(index: number, paramDiv: HTMLDivElement, view: GEODEView, enforcedType: varType | undefined = undefined): void {
+        if (enforcedType !== undefined) {
+            const currValParam = this.instance.parameters[index];
+            
+            if (enforcedType !== currValParam.type) {
+                const defaultVal = AmethystStructHandler.Create(enforcedType);
+                this.instance.parameters[index] = defaultVal;
+            }
+        }
+        AmethystBlock.SetSlot(view, this.project, this, paramDiv, index, enforcedType);
         const param = <AmethystStruct> this.instance.parameters[index];
         AmethystStructHandler.CreateEditor(param, paramDiv, view);
     }
-    CreateFunctParameterDiv(index: number, paramDiv: HTMLDivElement, view: GEODEView): AmethystBlock {
-        AmethystBlock.SetParameterDiv(view, this.project, this, paramDiv, index);
+
+    /**
+     * Call this function if you are sure your current parameter is a function
+     * @param enforcedType what type must fill this slot? If the parameter doesn't match this type, it will be outlined in red. Leave this field blank if there is no type requirement for this parameter.
+     */
+    DisplayFunctionSlot(index: number, paramDiv: HTMLDivElement, view: GEODEView, enforcedType: varType | undefined = undefined): AmethystBlock {
+        AmethystBlock.SetSlot(view, this.project, this, paramDiv, index, enforcedType);
         const param = <AmethystFunction> this.instance.parameters[index];
-        const paramEI = AmethystFunctionHandler.CreateBlock(param, paramDiv, view, this.project);
+        const paramReturnType = param.GetReturnType(this.project);
+        const isCorrectType = enforcedType === undefined ? true : enforcedType === paramReturnType;
+        const paramEI = AmethystFunctionHandler.CreateBlock(param, paramDiv, view, this.project, isCorrectType);
         paramEI.parentEI = this;
         if (paramEI.instance.type !== 'none') {
             AmethystBlock.MakeBlockDraggable(paramEI, view, this.project, false);
         }
         return paramEI;
     }
+
     RemoveParameter(parameter: AmethystFunction): void {
         for (let i = 0; i < this.instance.parameters.length; i++) {
             if (this.instance.parameters[i] === parameter) {
@@ -58,32 +86,34 @@ export abstract class AmethystBlock {
             }
         }
     }
+
     static MakeBlockDraggable(block: AmethystBlock, view: GEODEView, project: Project, isCopy: boolean) {
         const scriptEditor = project.scriptEditor;
         block.div.draggable = true;
         view.registerDomEvent(block.div, 'dragstart', (event: DragEvent) => {
             event.stopPropagation();
             if (event.dataTransfer !== null) {
+                event.dataTransfer.setData('text/plain', 'copy');
                 event.dataTransfer.effectAllowed = 'copy';
             }
             scriptEditor.currentlyDraggedBlockIsCopy = isCopy;
             scriptEditor.currentlyDraggedBlock = block;
-            scriptEditor.blocksDiv.style.height = '90%';
-            scriptEditor.delDiv.style.height = '10%';
         });
 
         view.registerDomEvent(block.div, 'dragend', (event: DragEvent) => {
             event.stopPropagation();
             event.preventDefault();
-            scriptEditor.blocksDiv.style.height = '100%';
-            scriptEditor.delDiv.style.height = '0%';
         });
     }
-    protected static SetParameterDiv(view: GEODEView, project: Project, afei: AmethystBlock, paramDiv: HTMLDivElement, paramIndex: number) {
+
+    protected static SetSlot(view: GEODEView, project: Project, afei: AmethystBlock, paramDiv: HTMLDivElement, paramIndex: number, typeToEnforce: varType | undefined = undefined) {
         const scriptEditor = project.scriptEditor;
 
         view.registerDomEvent(paramDiv, 'dragover', (event: DragEvent) => {
             event.stopPropagation();
+            if (!(typeToEnforce === undefined || project.scriptEditor.currentlyDraggedBlock?.instance.GetReturnType(project) === typeToEnforce)) {
+                return;
+            }
             event.preventDefault();
             if (event.dataTransfer !== null) {
                 event.dataTransfer.dropEffect = "copy";
@@ -99,6 +129,9 @@ export abstract class AmethystBlock {
         view.registerDomEvent(paramDiv, 'drop', (event: DragEvent) => {
             event.stopPropagation();
             if (scriptEditor.currentlyDraggedBlock === undefined) {
+                return;
+            }
+            if (!(typeToEnforce === undefined || project.scriptEditor.currentlyDraggedBlock?.instance.GetReturnType(project) === typeToEnforce)) {
                 return;
             }
             const shouldCopy = scriptEditor.currentlyDraggedBlockIsCopy;

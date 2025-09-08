@@ -1,6 +1,6 @@
 import { GEODERuntimeObject } from "classes/geode-objects/geode-runtime-object";
 import { Tab } from "./tab";
-import { KeyDown } from "classes/amethyst-scripting/functions/key-down/key-down";
+import { KeyDown } from "classes/amethyst-scripting/functions/key-down/instance";
 import { GEODEObjectHandler } from "classes/geode-objects/geode-object-handler";
 import { GEODEView } from "classes/geode-view";
 

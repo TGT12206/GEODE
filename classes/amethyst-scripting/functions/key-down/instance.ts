@@ -1,4 +1,4 @@
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStruct, varType } from "classes/amethyst-scripting/structs/struct";
 import { AmethystFunction } from "../function";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 
@@ -37,7 +37,10 @@ export class KeyDown extends AmethystFunction {
         'Y',
         'Z'
     ]
-    type = 'key down';
+    type: 'key down' = 'key down';
+    override GetReturnType(): varType {
+        return 'boolean';
+    }
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const key = AmethystStructHandler.Create('string', 'Any', 'key');

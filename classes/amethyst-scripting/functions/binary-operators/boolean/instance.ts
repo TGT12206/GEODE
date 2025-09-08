@@ -1,9 +1,12 @@
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStruct, varType } from "classes/amethyst-scripting/structs/struct";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { AmethystFunction } from "../../function";
 
 export class BooleanBinaryOperator extends AmethystFunction {
-    type = 'boolean binary operator';
+    type: 'boolean binary operator' = 'boolean binary operator';
+    override GetReturnType(): varType {
+        return 'boolean'
+    }
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const bool1 = AmethystStructHandler.Create('boolean', false, 'bool1');

@@ -1,10 +1,13 @@
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStruct, varType } from "classes/amethyst-scripting/structs/struct";
 import { AmethystFunction } from "../function";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { AmethystFunctionHandler } from "../function-handler";
 
 export class If extends AmethystFunction {
-    type = 'if';
+    type: 'if' = 'if';
+    override GetReturnType(): varType {
+        return 'none';
+    }
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const condition = AmethystStructHandler.Create('boolean', false, 'Condition');

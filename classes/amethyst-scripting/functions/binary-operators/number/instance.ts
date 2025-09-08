@@ -1,9 +1,12 @@
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStruct, varType } from "classes/amethyst-scripting/structs/struct";
 import { AmethystFunction } from "../../function";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 
 export class NumberBinaryOperator extends AmethystFunction {
-    type = 'number binary operator';
+    type: 'number binary operator' = 'number binary operator';
+    override GetReturnType(): varType {
+        return 'string';
+    }
     constructor(parameters: (AmethystStruct | AmethystFunction)[] | undefined) {
         super()
         const num1 = AmethystStructHandler.Create('number', 0, 'num1');

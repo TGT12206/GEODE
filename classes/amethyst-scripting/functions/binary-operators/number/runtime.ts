@@ -33,6 +33,6 @@ export class RuntimeNumberBinaryOperator extends AmethystRuntimeFunction {
                 break;
         }
 
-        return output;
+        return <AmethystNumber> output;
     }
 }

@@ -5,8 +5,12 @@ import { AmethystNumber } from "./number/number";
 import { AmethystNumberEditor } from "./number/number-editor";
 import { AmethystString } from "./string/string";
 import { AmethystStringEditor } from "./string/string-editor";
-import { AmethystStruct } from "./struct";
+import { AmethystStruct, varType } from "./struct";
 import { AmethystStructEditor } from "./struct-editor";
+
+/**
+ * If adding a variable type, make sure to add it to AmethystStruct's type and knownTypes as well
+ */
 
 /**
  * Used to handle Amethyst structs generically.
@@ -20,9 +24,8 @@ export class AmethystStructHandler {
      * @param name The name of the variable (optional).
      * @returns The new variable.
      */
-    static Create(type: string, value: any = undefined, name = ''): AmethystStruct {
+    static Create(type: varType, value: any = undefined, name = ''): AmethystStruct {
         switch(type) {
-            case 'none':
             case 'boolean':
             default:
                 return new AmethystBoolean(value, name);
@@ -42,7 +45,6 @@ export class AmethystStructHandler {
     static Copy(obj: AmethystStruct): AmethystStruct {
         let newObj;
         switch(obj.type) {
-            case 'none':
             case 'boolean':
             default:
                 return newObj = new AmethystBoolean(obj.value, obj.name);
@@ -61,14 +63,13 @@ export class AmethystStructHandler {
      */
     static CreateEditor(variable: AmethystStruct, editorDiv: HTMLDivElement, view: GEODEView): AmethystStructEditor {
         switch(variable.type) {
-            case 'none':
             case 'boolean':
             default:
-                return new AmethystBooleanEditor(variable, editorDiv, view);
+                return new AmethystBooleanEditor(<AmethystBoolean> variable, editorDiv, view);
             case 'number':
-                return new AmethystNumberEditor(variable, editorDiv, view);
+                return new AmethystNumberEditor(<AmethystNumber> variable, editorDiv, view);
             case 'string':
-                return new AmethystStringEditor(variable, editorDiv, view);
+                return new AmethystStringEditor(<AmethystString> variable, editorDiv, view);
         }
     }
 }

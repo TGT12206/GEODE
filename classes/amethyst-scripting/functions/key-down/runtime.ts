@@ -11,6 +11,6 @@ export class RuntimeKeyDown extends AmethystRuntimeFunction {
         const isKeyDown = this.project.gameView.pressedKeys.get(key.value);
         output.value = isKeyDown === undefined ? false : isKeyDown;
 
-        return output;
+        return <AmethystBoolean> output;
     }
 }

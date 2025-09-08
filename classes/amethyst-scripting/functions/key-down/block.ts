@@ -1,6 +1,6 @@
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystBlock } from "../block";
-import { KeyDown } from "./key-down";
+import { KeyDown } from "./instance";
 import { GEODEView } from "classes/geode-view";
 
 export class KeyDownBlock extends AmethystBlock {
@@ -8,7 +8,7 @@ export class KeyDownBlock extends AmethystBlock {
     override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-key-down-block hbox';
+        div.className = 'geode-script-block geode-key-down-block hbox' + (this.isRightType ? '' : ' geode-type-mismatch');
 
         const keySelect = div.createEl('select');
         div.createEl('div', { text: 'key down?' } );

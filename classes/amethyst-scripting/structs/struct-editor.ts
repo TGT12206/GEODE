@@ -1,4 +1,3 @@
-import { GEODEView } from "classes/geode-view";
 import { AmethystStruct } from "./struct";
 
 /**

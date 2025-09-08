@@ -8,14 +8,14 @@ export class BooleanBinaryOperatorBlock extends AmethystBlock {
     override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-binary-operator-block hbox';
+        div.className = 'geode-script-block geode-binary-operator-block hbox' + (this.isRightType ? '' : ' geode-type-mismatch');
         
         const bool1Div = div.createDiv();
         const operatorSelect = div.createEl('select');
         const bool2Div = div.createDiv();
 
-        this.CreateValOrFunctParameterDiv(0, bool1Div, view);
-        this.CreateValOrFunctParameterDiv(2, bool2Div, view);
+        this.DisplaySlot(0, bool1Div, view, 'boolean');
+        this.DisplaySlot(2, bool2Div, view, 'boolean');
 
         operatorSelect.createEl('option', { text: 'or', value: 'or' } );
         operatorSelect.createEl('option', { text: 'and', value: 'and' } );

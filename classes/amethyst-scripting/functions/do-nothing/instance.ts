@@ -1,3 +1,4 @@
+import { varType } from "classes/amethyst-scripting/structs/struct";
 import { AmethystFunction } from "../function";
 
 /**
@@ -5,5 +6,8 @@ import { AmethystFunction } from "../function";
  * for parameters that must be functions.
  */
 export class DoNothing extends AmethystFunction {
-    type = 'none';
+    type: 'none' = 'none';
+    override GetReturnType(): varType {
+        return 'none';
+    }
 }

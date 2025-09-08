@@ -1,10 +1,10 @@
-import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystBoolean } from "classes/amethyst-scripting/structs/boolean/boolean";
-import { AmethystRuntimeFunction } from "../../runtime-function";
+import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { GEODEView } from "classes/geode-view";
+import { AmethystRuntimeFunction } from "../../runtime-function";
 
-export class RuntimeBooleanBinaryOperator extends AmethystRuntimeFunction {
+export class RuntimeCompareEquality extends AmethystRuntimeFunction {
     async Execute(view: GEODEView): Promise<AmethystBoolean> {
         const param1 = this.parameters[0];
         const param2 = <AmethystStruct> this.parameters[1];
@@ -13,17 +13,17 @@ export class RuntimeBooleanBinaryOperator extends AmethystRuntimeFunction {
         const param1IsAFRI = param1 instanceof AmethystRuntimeFunction;
         const param3IsAFRI = param3 instanceof AmethystRuntimeFunction;
 
-        const bool1 = param1IsAFRI ? (await param1.Execute(view)).value : param1.value;
-        const bool2 = param3IsAFRI ? (await param3.Execute(view)).value : param3.value;
+        const val1 = param1IsAFRI ? (await param1.Execute(view)).value : param1.value;
+        const val2 = param3IsAFRI ? (await param3.Execute(view)).value : param3.value;
 
         const output = AmethystStructHandler.Create('boolean', false, 'output');
         switch(param2.value) {
-            case 'or':
+            case '=':
             default:
-                output.value = bool1 || bool2;
+                output.value = val1 === val2;
                 break;
-            case 'and':
-                output.value = bool1 && bool2;
+            case '!=':
+                output.value = val1 !== val2;
                 break;
         }
 

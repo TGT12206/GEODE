@@ -1,6 +1,6 @@
 import { Tab } from "./tab";
 import { GEODEObject } from "../geode-objects/geode-object";
-import { AmethystFunction } from "classes/amethyst-scripting/functions/function";
+import { AmethystFunction, knownFunctionTypes } from "classes/amethyst-scripting/functions/function";
 import { AmethystBlock } from "classes/amethyst-scripting/functions/block";
 import { AmethystFunctionHandler } from "classes/amethyst-scripting/functions/function-handler";
 import { GEODEView } from "classes/geode-view";
@@ -50,7 +50,7 @@ export class ScriptEditor extends Tab {
 
         this.scriptDiv = leftSide.createDiv('geode-script');
         const blockPool = div.createDiv('geode-block-pool');
-        this.blocksDiv = blockPool.createDiv('geode-blocks-list vbox');
+        this.blocksDiv = blockPool.createDiv('geode-blocks-list-wrapper').createDiv('geode-blocks-list vbox');
         this.delDiv = blockPool.createDiv('geode-block-delete-div');
 
         const LoadScript = () => {
@@ -115,13 +115,18 @@ export class ScriptEditor extends Tab {
                     parentEI.DisplayBlock(view);
                 }
             }
+            this.delDiv.className = 'geode-block-delete-div';
         });
         
-        const knownTypes = AmethystFunction.knownTypes;
+        const knownTypes = knownFunctionTypes;
         for (let i = 1; i < knownTypes.length; i++) {
-            const instance = AmethystFunctionHandler.Create(knownTypes[i]);
-            const block = AmethystFunctionHandler.CreateBlock(instance, this.blocksDiv.createDiv(), view, this.project);
-            AmethystBlock.MakeBlockDraggable(block, view, this.project, true);
+            try {
+                const instance = AmethystFunctionHandler.Create(knownTypes[i]);
+                const block = AmethystFunctionHandler.CreateBlock(instance, this.blocksDiv.createDiv(), view, this.project);
+                AmethystBlock.MakeBlockDraggable(block, view, this.project, true);
+            } catch(e) {
+                console.log(knownTypes[i] + ' does not exist');
+            }
         }
     }
 

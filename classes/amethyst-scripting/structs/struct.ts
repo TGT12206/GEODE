@@ -1,21 +1,50 @@
 /**
+ * If adding a variable type, make sure to add to both the known types and type.
+ * The known types is used by blocks to switch the type of value inputs
+ * when a new function is dragged in.
+ * 
+ * For example, consider this pseudo code (the parentheses are parameters):
+ * 
+ * (get variable ('hp') from (object 0)) + (1)
+ * 
+ * if the user decides to switch to the variable 'thing to say',the block
+ * automatically changes the value (1) to the default string, ('')
+ * 
+ * (get variable ('thing to say') from (object 0)) + ('')
+ */
+
+/**
+ * If adding a variable type, make sure to add to StructHandler as well.
+ */
+
+export const knownVarTypes = [
+    'none',
+    'boolean',
+    'number',
+    'string'
+] as const;
+
+export type varType = typeof knownVarTypes[number];
+
+/**
  * A variable in the Amethyst scripting language.
  */
 export abstract class AmethystStruct {
     /**
-     * All of the Amethyst variable types provided by the plugin
+     * An enum for the types is not used because when saved to json,
+     * they are saved as integers. This makes any projects that a user saves
+     * break if a new type is added between existing types. At the same time,
      */
-    static knownTypes = [
-        'none',
-        'boolean',
-        'number',
-        'string'
-    ];
+
+    
 
     /**
-     * The type of the variable (must be one of the values in AmethystStruct.knownTypes)
+     * An enum for the types is not used because when saved to json,
+     * they are saved as integers. This makes any projects that a user saves
+     * break if a new type is added between existing types. At the same time,
      */
-    type: string;
+
+    type: varType;
     
     /**
      * The value stored by this variable

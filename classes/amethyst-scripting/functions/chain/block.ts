@@ -1,16 +1,16 @@
 import { GEODEView } from "classes/geode-view";
 import { AmethystBlock } from "../block";
-import { DoNothing } from "../do-nothing/do-nothing";
+import { DoNothing } from "../do-nothing/instance";
 import { AmethystFunction } from "../function";
 import { AmethystFunctionHandler } from "../function-handler";
-import { Chain } from "./chain";
+import { Chain } from "./instance";
 
 export class ChainBlock extends AmethystBlock {
     instance: Chain;
     override DisplayBlock(view: GEODEView): void {
         this.div.empty();
         const div = this.div;
-        div.className = 'geode-script-block geode-chain-block vbox';
+        div.className = 'geode-script-block geode-chain-block vbox' + (this.isRightType ? '' : ' geode-type-mismatch');
 
         for (let i = 0; i < this.instance.parameters.length; i++) {
             const index = i;
@@ -31,7 +31,7 @@ export class ChainBlock extends AmethystBlock {
                 this.DisplayBlock(view);
             });
 
-            this.CreateFunctParameterDiv(index, currBlockDiv.createDiv(), view);
+            this.DisplayFunctionSlot(index, currBlockDiv.createDiv(), view);
         }
         const addButton = div.createEl('button', { text: '+' } );
         addButton.className = 'geode-add-button geode-chain-final-add-slot';

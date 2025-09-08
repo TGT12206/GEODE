@@ -1,9 +1,13 @@
-import { DoNothing } from "../do-nothing/do-nothing";
+import { varType } from "classes/amethyst-scripting/structs/struct";
+import { DoNothing } from "../do-nothing/instance";
 import { AmethystFunction } from "../function";
 import { AmethystFunctionHandler } from "../function-handler";
 
 export class Chain extends AmethystFunction {
-    type = 'chain';
+    type: 'chain' = 'chain';
+    override GetReturnType(): varType {
+        return 'none';
+    }
     defaultParameters: AmethystFunction[];
     parameters: AmethystFunction[];
     constructor(parameters: (AmethystFunction)[] | undefined = undefined) {

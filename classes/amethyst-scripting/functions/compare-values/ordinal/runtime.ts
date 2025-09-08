@@ -1,10 +1,10 @@
 import { AmethystBoolean } from "classes/amethyst-scripting/structs/boolean/boolean";
-import { AmethystRuntimeFunction } from "../runtime-function";
 import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { GEODEView } from "classes/geode-view";
+import { AmethystRuntimeFunction } from "../../runtime-function";
 
-export class RuntimeCompareNumbers extends AmethystRuntimeFunction {
+export class RuntimeCompareOrdinals extends AmethystRuntimeFunction {
     async Execute(view: GEODEView): Promise<AmethystBoolean> {
         const param1 = this.parameters[0];
         const param2 = <AmethystStruct> this.parameters[1];
@@ -28,17 +28,17 @@ export class RuntimeCompareNumbers extends AmethystRuntimeFunction {
             case '<':
                 output.value = val1 < val2;
                 break;
-            case '>':
-                output.value = val1 > val2;
-                break;
             case '<=':
                 output.value = val1 <= val2;
+                break;
+            case '>':
+                output.value = val1 > val2;
                 break;
             case '>=':
                 output.value = val1 >= val2;
                 break;
         }
 
-        return output;
+        return <AmethystBoolean> output;
     }
 }
