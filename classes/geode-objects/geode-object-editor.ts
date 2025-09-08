@@ -1,6 +1,6 @@
 import { AmethystStructHandler } from "classes/amethyst-scripting/structs/struct-handler";
 import { GEODEObject } from "./geode-object";
-import { AmethystStruct } from "classes/amethyst-scripting/structs/struct";
+import { AmethystStruct, knownVarTypes, varType } from "classes/amethyst-scripting/structs/struct";
 import { Project } from "classes/project";
 import { GEODEView } from "classes/geode-view";
 
@@ -31,17 +31,18 @@ export class GEODEObjectEditor {
         }
         const addNewDiv = div.createDiv('geode-inspector-new-var hbox');
 
-        const variableNameInput = addNewDiv.createEl('input', { type: 'text', value: 'unnamed' } );
+        const variableNameInput = addNewDiv.createEl('input', { type: 'text', value: 'new var' } );
         const variableTypeInput = addNewDiv.createEl('select');
         const addVariableButton = addNewDiv.createEl('button', { text: '+' } );
 
         addVariableButton.className = 'geode-add-button';
 
-        for (let i = 1; i < AmethystStruct.knownTypes.length; i++) {
-            const type = AmethystStruct.knownTypes[i];
-            variableTypeInput.createEl('option', { text: type, value: i + '' } );
+        const knownTypes = knownVarTypes;
+        for (let i = 1; i < knownTypes.length; i++) {
+            const type = knownTypes[i];
+            variableTypeInput.createEl('option', { text: type, value: type } );
         }
-        variableTypeInput.value = '1';
+        variableTypeInput.value = knownTypes[1];
 
         addVariableButton.onclick = () => {
             const name = variableNameInput.value;
@@ -50,7 +51,7 @@ export class GEODEObjectEditor {
                     return;
                 }
             }
-            const newVar = AmethystStructHandler.Create(variableTypeInput.value, undefined, name);
+            const newVar = AmethystStructHandler.Create(<varType> variableTypeInput.value, undefined, name);
             this.instance.variables.push(newVar);
             const newVarDiv = variablesDiv.createDiv('geode-inspector-variable hbox');
             newVarDiv.createEl('div', { text: newVar.name } );

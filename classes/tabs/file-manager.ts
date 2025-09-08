@@ -79,13 +79,13 @@ export class GEODEFileManager extends Tab {
         switch(plainObj.type) {
             case '📁Folder':
             default:
-                return Object.assign(new GEODEFolder(path, parentPath, this.project), plainObj);
+                return Object.assign(new GEODEFolder(path, parentPath), plainObj);
             case '🖼️Image':
-                return Object.assign(new ImageFile(path, parentPath, this.project), plainObj);
+                return Object.assign(new ImageFile(path, parentPath), plainObj);
             case '🔊Sound':
-                return Object.assign(new SoundFile(path, parentPath, this.project), plainObj);
+                return Object.assign(new SoundFile(path, parentPath), plainObj);
             case '🎞️Video':
-                return Object.assign(new VideoFile(path, parentPath, this.project), plainObj);
+                return Object.assign(new VideoFile(path, parentPath), plainObj);
         }
     }
 
@@ -93,13 +93,13 @@ export class GEODEFileManager extends Tab {
         switch(type) {
             case '📁Folder':
             default:
-                return new GEODEFolder(path, parentPath, this.project);
+                return new GEODEFolder(path, parentPath);
             case '🖼️Image':
-                return new ImageFile(path, parentPath, this.project);
+                return new ImageFile(path, parentPath);
             case '🔊Sound':
-                return new SoundFile(path, parentPath, this.project);
+                return new SoundFile(path, parentPath);
             case '🎞️Video':
-                return new VideoFile(path, parentPath, this.project);
+                return new VideoFile(path, parentPath);
         }
     }
 
@@ -118,7 +118,7 @@ export class GEODEFileManager extends Tab {
         const CFindex = 2;
 
         const rootPath = new String('/');
-        const root = new GEODEFolder(rootPath, rootPath, this.project);
+        const root = new GEODEFolder(rootPath, rootPath);
         folderStack.push([projectFolder, root, 0]);
         this.files.push(root);
         let depth = 0;
@@ -130,7 +130,7 @@ export class GEODEFileManager extends Tab {
             const relativePath = currFile.path.replace(this.project.pathToProject, '');
             if (currFile.name !== 'RESERVED FOLDER DO NOT RENAME') {
                 if (currFile instanceof TFolder) {
-                    const newGEODEFolder = new GEODEFolder(relativePath, currFolder[GFindex].path, this.project);
+                    const newGEODEFolder = new GEODEFolder(relativePath, currFolder[GFindex].path);
                     this.files.push(newGEODEFolder);
                     currFolder[GFindex].files.push(newGEODEFolder);
                     folderStack.push([currFile, newGEODEFolder, 0]);

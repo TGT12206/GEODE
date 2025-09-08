@@ -20,5 +20,9 @@ export class AmethystStringEditor extends AmethystStructEditor {
             this.instance.value = input.value;
             AmethystStructEditor.AdjustInputWidth(input, div);
         });
+        view.registerDomEvent(input, 'drop', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
+        });
     }
 }

@@ -58,7 +58,7 @@ export abstract class AmethystBlock {
         }
         AmethystBlock.SetSlot(view, this.project, this, paramDiv, index, enforcedType);
         const param = <AmethystStruct> this.instance.parameters[index];
-        AmethystStructHandler.CreateEditor(param, paramDiv, view);
+        const valInput = AmethystStructHandler.CreateEditor(param, paramDiv, view);
     }
 
     /**
@@ -131,9 +131,10 @@ export abstract class AmethystBlock {
             if (scriptEditor.currentlyDraggedBlock === undefined) {
                 return;
             }
-            if (!(typeToEnforce === undefined || project.scriptEditor.currentlyDraggedBlock?.instance.GetReturnType(project) === typeToEnforce)) {
+            if (!(typeToEnforce === undefined || scriptEditor.currentlyDraggedBlock.instance.GetReturnType(project) === typeToEnforce)) {
                 return;
             }
+            console.log('a');
             const shouldCopy = scriptEditor.currentlyDraggedBlockIsCopy;
             const droppedBlock = scriptEditor.currentlyDraggedBlock;
             const newInstance = shouldCopy ? AmethystFunctionHandler.Copy(droppedBlock.instance) : droppedBlock.instance;
