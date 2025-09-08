@@ -1,50 +1,52 @@
-import { AKeydownI } from "classes/functions/function";
-import { GEOD3ObjectHandler, GEOD3ObjectRI } from "./geod3-object";
+import { GEODERuntimeObject } from "classes/geode-objects/geode-runtime-object";
 import { Tab } from "./tab";
+import { KeyDown } from "classes/amethyst-scripting/functions/key-down/instance";
+import { GEODEObjectHandler } from "classes/geode-objects/geode-object-handler";
+import { GEODEView } from "classes/geode-view";
 
 export class GameView extends Tab {
     static override icon = '▶️';
     gameDiv: HTMLDivElement;
     stillRunning: boolean;
-    objects: GEOD3ObjectRI[];
+    objects: GEODERuntimeObject[];
     pressedKeys: Map<string, boolean>;
     get pressedKeysArray(): [string, boolean][] {
         return Array.from(this.pressedKeys.entries());
     }
 
-    override async Focus(div: HTMLDivElement): Promise<void> {
+    override async Focus(div: HTMLDivElement, view: GEODEView): Promise<void> {
         div.empty();
-        div.className = 'geod3-game-view-main-div geod3-tab-container';
-        const gameWrapper = div.createDiv('geod3-game-wrapper');
-        this.gameDiv = gameWrapper.createDiv('geod3-game');
+        div.className = 'geode-game-view-main-div geode-tab-container';
+        const gameWrapper = div.createDiv('geode-game-wrapper');
+        this.gameDiv = gameWrapper.createDiv('geode-game');
         this.stillRunning = true;
         this.objects = [];
         this.pressedKeys = new Map();
 
-        this.ListenForKeyPresses();
+        this.ListenForKeyPresses(view);
 
-        await this.OnStart();
+        await this.OnStart(view);
         while (this.stillRunning) {
-            this.OnNewFrame();
+            this.OnNewFrame(view);
             await sleep(15);
         }
     }
-    override UnFocus(div: HTMLDivElement): void | Promise<void> {
+    override async UnFocus(div: HTMLDivElement): Promise<void> {
         div.empty();
         this.stillRunning = false;
     }
 
-    private ListenForKeyPresses() {
+    private ListenForKeyPresses(view: GEODEView) {
         this.gameDiv.tabIndex = -1;
         this.gameDiv.focus();
 
-        for (let i = 0; i < AKeydownI.keylist.length; i++) {
-            const currKey = AKeydownI.keylist[i];
+        const keyList = KeyDown.keylist;
+        for (let i = 0; i < keyList.length; i++) {
+            const currKey = keyList[i];
             this.pressedKeys.set(currKey, false);
         }
 
-        this.gameDiv.onkeydown = (event) => {
-            console.log(event.key);
+        view.registerDomEvent(this.gameDiv, 'keydown', (event) => {
             this.pressedKeys.set('Any', true);
             switch (event.key) {
                 case ' ':
@@ -167,8 +169,9 @@ export class GameView extends Tab {
                     this.pressedKeys.set('Z', true);
                     return;
             }
-        }
-        this.gameDiv.onkeyup = (event) => {
+        });
+
+        view.registerDomEvent(this.gameDiv, 'keyup', (event) => {
             switch (event.key) {
                 case ' ':
                     this.pressedKeys.set('Space', false);
@@ -297,22 +300,22 @@ export class GameView extends Tab {
                 }
             }
             this.pressedKeys.set('Any', false);
-        }
+        });
     }
 
-    private async OnStart() {
-        const objInstances = this.anp.project.sceneView.objects;
+    private async OnStart(view: GEODEView) {
+        const objInstances = this.project.sceneView.objects;
         for (let i = 0; i < objInstances.length; i++) {
-            this.objects.push(GEOD3ObjectHandler.CreateRI(objInstances[i], this.anp, this.gameDiv.createDiv()));
+            this.objects.push(GEODEObjectHandler.CreateRuntimeObject(objInstances[i], this.project, this.gameDiv.createDiv()));
         }
         for (let i = 0; i < this.objects.length; i++) {
-            this.objects[i].OnStart();
+            this.objects[i].OnStart(view);
         }
     }
 
-    private async OnNewFrame() {
+    private async OnNewFrame(view: GEODEView) {
         this.gameDiv.focus();
-        const renderingOrder: GEOD3ObjectRI[] = [];
+        const renderingOrder: GEODERuntimeObject[] = [];
         for (let i = 0; i < this.objects.length; i++) {
             const currObj = this.objects[i];
             currObj.Render();
@@ -323,18 +326,18 @@ export class GameView extends Tab {
             currSprite.objDiv.style.zIndex = i + '';
         }
         for (let i = 0; i < this.objects.length; i++) {
-            this.objects[i].OnNewFrame();
+            this.objects[i].OnNewFrame(view);
         }
     }
 
-    private PlaceIntoSpriteArray(arr: GEOD3ObjectRI[], newItem: GEOD3ObjectRI): void {
+    private PlaceIntoSpriteArray(arr: GEODERuntimeObject[], newItem: GEODERuntimeObject): void {
         let low = 0;
         let high = arr.length;
 
-        const newZ = GEOD3ObjectHandler.GetVariable(newItem, 'z');
+        const newZ = GEODEObjectHandler.GetVariable(newItem, 'z');
         while (low < high) {
             const mid = Math.floor((low + high) / 2);
-            const midZ = GEOD3ObjectHandler.GetVariable(arr[mid], 'z');
+            const midZ = GEODEObjectHandler.GetVariable(arr[mid], 'z');
             if (midZ < newZ) {
                 low = mid + 1;
             } else {

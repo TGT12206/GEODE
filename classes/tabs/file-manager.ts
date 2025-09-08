@@ -1,13 +1,14 @@
 import { TFile, TFolder } from "obsidian";
 import { Tab } from "./tab";
-import { AppAndProject } from "classes/project";
-import { GEOD3File } from "./file-types/geod3-file";
-import { GEOD3Folder } from "./file-types/geod3-folder";
+import { GEODEFile } from "./file-types/geode-file";
+import { GEODEFolder } from "./file-types/geode-folder";
 import { ImageFile, SoundFile, VideoFile } from "./file-types/real-file";
+import { Project } from "classes/project";
+import { GEODEView } from "classes/geode-view";
 
-export class GEOD3FileManager extends Tab {
+export class GEODEFileManager extends Tab {
     static override icon = '📁';
-    files: GEOD3File[];
+    files: GEODEFile[];
     mainDiv: HTMLDivElement;
     fileDiv: HTMLDivElement;
     propertiesDiv: HTMLDivElement;
@@ -60,8 +61,8 @@ export class GEOD3FileManager extends Tab {
         throw new Error('Path ' + path + ' not found');
     }
 
-    constructor(anp: AppAndProject) {
-        super(anp);
+    constructor(project: Project) {
+        super(project);
         this.files = [];
     }
 
@@ -72,54 +73,52 @@ export class GEOD3FileManager extends Tab {
         '🎞️Video'
     ]
 
-    private AssignObjectFromFileType(plainObj: any, path: string, parentPath: String): GEOD3File {
+    private AssignObjectFromFileType(plainObj: any, path: string, parentPath: String): GEODEFile {
         plainObj.path = path;
         plainObj.parentPath = parentPath;
         switch(plainObj.type) {
             case '📁Folder':
             default:
-                return Object.assign(new GEOD3Folder(path, parentPath), plainObj);
+                return Object.assign(new GEODEFolder(path, parentPath, this.project), plainObj);
             case '🖼️Image':
-                return Object.assign(new ImageFile(path, parentPath), plainObj);
+                return Object.assign(new ImageFile(path, parentPath, this.project), plainObj);
             case '🔊Sound':
-                return Object.assign(new SoundFile(path, parentPath), plainObj);
+                return Object.assign(new SoundFile(path, parentPath, this.project), plainObj);
             case '🎞️Video':
-                return Object.assign(new VideoFile(path, parentPath), plainObj);
+                return Object.assign(new VideoFile(path, parentPath, this.project), plainObj);
         }
     }
 
-    static CreateFileOfType(path: string, parentPath: String, type: string): GEOD3File {
+    CreateFileOfType(path: string, parentPath: String, type: string): GEODEFile {
         switch(type) {
             case '📁Folder':
             default:
-                return new GEOD3Folder(path, parentPath);
+                return new GEODEFolder(path, parentPath, this.project);
             case '🖼️Image':
-                return new ImageFile(path, parentPath);
+                return new ImageFile(path, parentPath, this.project);
             case '🔊Sound':
-                return new SoundFile(path, parentPath);
+                return new SoundFile(path, parentPath, this.project);
             case '🎞️Video':
-                return new VideoFile(path, parentPath);
+                return new VideoFile(path, parentPath, this.project);
         }
     }
 
-    async LoadFiles(anp: AppAndProject) {
+    async LoadFiles(view: GEODEView) {
         this.files = [];
-        const app = anp.app;
-        const vault = app.vault;
-        const project = anp.project;
+        const vault = view.app.vault;
 
-        const projectFolder = vault.getFolderByPath(project.pathToProject);
+        const projectFolder = vault.getFolderByPath(this.project.pathToProject);
         if (projectFolder === null) {
             throw new Error('Project folder does not exist');
         }
 
-        const folderStack: [TFolder, GEOD3Folder, number][] = [];
+        const folderStack: [TFolder, GEODEFolder, number][] = [];
         const TFindex = 0;
         const GFindex = 1;
         const CFindex = 2;
 
         const rootPath = new String('/');
-        const root = new GEOD3Folder(rootPath, rootPath);
+        const root = new GEODEFolder(rootPath, rootPath, this.project);
         folderStack.push([projectFolder, root, 0]);
         this.files.push(root);
         let depth = 0;
@@ -128,13 +127,13 @@ export class GEOD3FileManager extends Tab {
             const currFolder = folderStack[depth];
             const currIndex = currFolder[CFindex];
             const currFile = currFolder[TFindex].children[currIndex];
-            const relativePath = currFile.path.replace(project.pathToProject, '');
+            const relativePath = currFile.path.replace(this.project.pathToProject, '');
             if (currFile.name !== 'RESERVED FOLDER DO NOT RENAME') {
                 if (currFile instanceof TFolder) {
-                    const newGEOD3Folder = new GEOD3Folder(relativePath, currFolder[GFindex].path);
-                    this.files.push(newGEOD3Folder);
-                    currFolder[GFindex].files.push(newGEOD3Folder);
-                    folderStack.push([currFile, newGEOD3Folder, 0]);
+                    const newGEODEFolder = new GEODEFolder(relativePath, currFolder[GFindex].path, this.project);
+                    this.files.push(newGEODEFolder);
+                    currFolder[GFindex].files.push(newGEODEFolder);
+                    folderStack.push([currFile, newGEODEFolder, 0]);
                     depth++;
                 } else if (currFile instanceof TFile) {
                     if (currFile.extension === 'md') {
@@ -161,18 +160,16 @@ export class GEOD3FileManager extends Tab {
         }
     }
 
-    override async Focus(div: HTMLDivElement): Promise<void> {
+    override async Focus(div: HTMLDivElement, view: GEODEView): Promise<void> {
         div.empty();
         this.mainDiv = div;
-        this.mainDiv.className = 'geod3-tab-container hbox';
-        this.fileDiv = div.createDiv('vbox');
-        this.propertiesDiv = div.createDiv('geod3-file-properties vbox');
-        this.fileDiv.style.width = '70%';
-        this.propertiesDiv.style.width = '30%';
-        this.files[0].Open(this.anp);
+        this.mainDiv.className = 'geode-tab-container hbox';
+        this.fileDiv = div.createDiv('geode-file-manager-files vbox');
+        this.propertiesDiv = div.createDiv('geode-file-properties vbox');
+        this.files[0].Open(view, this.project);
     }
 
-    override UnFocus(div: HTMLDivElement): void | Promise<void> {
+    override async UnFocus(div: HTMLDivElement, view: GEODEView): Promise<void> {
         div.empty();
     }
 }
