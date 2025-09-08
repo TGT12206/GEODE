@@ -1,7 +1,7 @@
 {
 	"id": "geode",
 	"name": "GEODE",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"minAppVersion": "1.9.12",
 	"description": "A game maker (think about the level of scratch). GEODE stands for: Game Engine for Open Development by Everyone (or anything else. open to suggestions)",
 	"author": "TGT12206",
