@@ -20,6 +20,7 @@ export abstract class RealFile extends GEODEFile {
         this.DisplayActualFile(manager.fileDiv);
     }
     override async GrabDependencies(view: GEODEView, project: Project): Promise<void> {
+        this.src = '';
         try {
             const vault = view.app.vault;
             const pathToActualFile = project.pathToProject + this.path + '.actual-file';

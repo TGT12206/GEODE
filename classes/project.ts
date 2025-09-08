@@ -70,7 +70,7 @@ export class Project {
     async GrabFileDependencies(view: GEODEView) {
         const fm = this.fileManager;
         for (let i = 0; i < fm.files.length; i++) {
-            await fm.files[i].GrabDependencies(view);
+            await fm.files[i].GrabDependencies(view, this);
         }
     }
     async LoadObjects(view: GEODEView) {
