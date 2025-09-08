@@ -5,9 +5,8 @@ import { GEODEView } from 'classes/geode-view';
 
 export abstract class GEODEFile {
     parentPath: String;
-    project: Project;
-    getParent(): GEODEFolder {
-        return <GEODEFolder> this.project.fileManager.GetFile(this.parentPath);
+    getParent(project: Project): GEODEFolder {
+        return <GEODEFolder> project.fileManager.GetFile(this.parentPath);
     }
 
     /**
@@ -24,17 +23,16 @@ export abstract class GEODEFile {
 
     type: string;
     abstract get data(): any;
-    constructor(path: String, parentPath: String, project: Project) {
+    constructor(path: String, parentPath: String) {
         this.parentPath = parentPath;
         this.path = path;
-        this.project = project;
     }
-    async GrabDependencies(view: GEODEView): Promise<void> {}
-    async DisplayThumbnail(view: GEODEView, thumbnailDiv: HTMLDivElement): Promise<void> {
-        const manager = this.project.fileManager;
+    async GrabDependencies(view: GEODEView, project: Project): Promise<void> {}
+    async DisplayThumbnail(view: GEODEView, thumbnailDiv: HTMLDivElement, project: Project): Promise<void> {
+        const manager = project.fileManager;
         thumbnailDiv.empty();
 		thumbnailDiv.onclick = async () => {
-            this.getParent().SelectFile(view, this, thumbnailDiv);
+            this.getParent(project).SelectFile(view, this, thumbnailDiv, project);
 		}
 		thumbnailDiv.createEl('div', { text: this.name } );
 		thumbnailDiv.createEl('div', { text: 'Type: ' + this.type } );
@@ -44,14 +42,14 @@ export abstract class GEODEFile {
         manager.fileDiv.empty();
         manager.fileDiv.className = 'geode-file-manager-files vbox';
 
-        const backButton = manager.fileDiv.createEl('button', { text: 'Go back to ' + this.getParent().name } );
+        const backButton = manager.fileDiv.createEl('button', { text: 'Go back to ' + this.getParent(project).name } );
 
         backButton.onclick = async () => {
-            this.getParent().Open(view, project);
+            this.getParent(project).Open(view, project);
         }
     }
-    async DisplayProperties(view: GEODEView, thumbnailDiv: HTMLDivElement) {
-        const manager = this.project.fileManager;
+    async DisplayProperties(view: GEODEView, thumbnailDiv: HTMLDivElement, project: Project) {
+        const manager = project.fileManager;
         manager.propertiesDiv.empty();
 		const nameInput = manager.propertiesDiv.createEl('input', { type: 'text', value: this.name } );
 		manager.propertiesDiv.createEl('div', { text: 'Type: ' + this.type } );
@@ -60,14 +58,14 @@ export abstract class GEODEFile {
 
         nameInput.onchange = async () => {
             const originalPath = this.path;
-            const tFile = vault.getFileByPath(this.project.pathToProject + originalPath + '.md');
+            const tFile = vault.getFileByPath(project.pathToProject + originalPath + '.md');
             const currName = this.name;
             const newPath = this.path.slice(0, -currName.length) + nameInput.value;
             if (tFile !== null) {
-                vault.rename(tFile, this.project.pathToProject + newPath + '.md');
+                vault.rename(tFile, project.pathToProject + newPath + '.md');
             }
             this.path = newPath;
-            this.DisplayThumbnail(view, thumbnailDiv);
+            this.DisplayThumbnail(view, thumbnailDiv, project);
         }
     }
     async Save(view: GEODEView, project: Project) {

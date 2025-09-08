@@ -12,6 +12,7 @@ export class GEODEView extends ItemView {
     scope: Scope;
     defaultPath: string;
     project: Project;
+    mainDiv: HTMLDivElement;
     constructor(leaf: WorkspaceLeaf, defaultPath: string) {
         super(leaf);
         this.defaultPath = defaultPath;
@@ -30,7 +31,8 @@ export class GEODEView extends ItemView {
         const mainEl = this.contentEl;
         mainEl.empty();
         
-        const mainDiv = mainEl.createDiv('geode-main-div');
+        this.mainDiv = mainEl.createDiv('geode-main-div');
+        const mainDiv = this.mainDiv;
 
         mainDiv.createEl('div', { text: 'Path to project:' } );
         const pathInput = mainDiv.createEl('input', { type: 'text', value: this.defaultPath } );
@@ -82,6 +84,9 @@ export class GEODEView extends ItemView {
     }
 
     async onClose() {
-        this.project.gameView.stillRunning = false;
+        this.project.fileManager.UnFocus(this.mainDiv, this);
+        this.project.sceneView.UnFocus(this.mainDiv);
+        this.project.scriptEditor.UnFocus(this.mainDiv);
+        this.project.gameView.UnFocus(this.mainDiv);
     }
 }

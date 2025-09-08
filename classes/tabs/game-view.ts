@@ -7,7 +7,7 @@ import { GEODEView } from "classes/geode-view";
 export class GameView extends Tab {
     static override icon = '▶️';
     gameDiv: HTMLDivElement;
-    stillRunning: boolean;
+    currentIntervalID: number;
     objects: GEODERuntimeObject[];
     pressedKeys: Map<string, boolean>;
     get pressedKeysArray(): [string, boolean][] {
@@ -19,21 +19,19 @@ export class GameView extends Tab {
         div.className = 'geode-game-view-main-div geode-tab-container';
         const gameWrapper = div.createDiv('geode-game-wrapper');
         this.gameDiv = gameWrapper.createDiv('geode-game');
-        this.stillRunning = true;
         this.objects = [];
         this.pressedKeys = new Map();
 
         this.ListenForKeyPresses(view);
 
         await this.OnStart(view);
-        while (this.stillRunning) {
-            this.OnNewFrame(view);
-            await sleep(15);
-        }
+        view.registerInterval(
+            this.currentIntervalID = window.setInterval( () => { this.OnNewFrame(view) }, 15)
+        );
     }
     override async UnFocus(div: HTMLDivElement): Promise<void> {
         div.empty();
-        this.stillRunning = false;
+        window.clearInterval(this.currentIntervalID);
     }
 
     private ListenForKeyPresses(view: GEODEView) {
